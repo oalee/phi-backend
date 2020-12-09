@@ -20,19 +20,51 @@ class UserAPI extends DataSource {
     this.context = config.context;
   }
 
+  async login({username, password}){
+
+  }
+
+
+  async getAllUsers(){
+
+    const users = await this.store.users.findAll()
+
+    console.log(users)
+    return users
+  }
+
+  async createUser( {username, password} ){
+
+
+    const user = await this.store.users.create( {username: username, password: password})
+
+    console.log("start")
+    console.log(user)
+
+    return {
+      id : String(user.dataValues.id),
+      username: user.dataValues.username,
+      createdAt: String(user.dataValues.createdAt),
+      updatedAt:String(user.dataValues.updatedAt),
+      token: user.dataValues.token
+    }
+
+
+  }
+
   /**
    * User can be called with an argument that includes email, but it doesn't
    * have to be. If the user is already on the context, it will use that user
    * instead
    */
-  async findOrCreateUser({ email: emailArg } = {}) {
-    const email =
-      this.context && this.context.user ? this.context.user.email : emailArg;
-    if (!email || !isEmail.validate(email)) return null;
+  // async createUser({ email: emailArg } = {}) {
+  //   const email =
+  //     this.context && this.context.user ? this.context.user.email : emailArg;
+  //   if (!email || !isEmail.validate(email)) return null;
 
-    const users = await this.store.users.findOrCreate({ where: { email } });
-    return users && users[0] ? users[0] : null;
-  }
+  //   const users = await this.store.users.findOrCreate({ where: { email } });
+  //   return users && users[0] ? users[0] : null;
+  // }
 
   async bookTrips({ launchIds }) {
     const userId = this.context.user.id;

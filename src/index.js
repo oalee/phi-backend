@@ -17,7 +17,7 @@ const store = createStore();
 
 // set up any dataSources our resolvers need
 const dataSources = () => ({
-  launchAPI: new LaunchAPI(),
+  // launchAPI: new LaunchAPI(),
   userAPI: new UserAPI({ store }),
 });
 
@@ -44,10 +44,7 @@ const server = new ApolloServer({
   context,
   introspection: true,
   playground: true,
-  engine: {
-    apiKey: process.env.ENGINE_API_KEY,
-    ...internalEngineDemo,
-  },
+  
 });
 
 // Start our server if we're not in a test env.
@@ -69,7 +66,6 @@ module.exports = {
   typeDefs,
   resolvers,
   ApolloServer,
-  LaunchAPI,
   UserAPI,
   store,
   server,

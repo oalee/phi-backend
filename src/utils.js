@@ -29,25 +29,25 @@ module.exports.paginateResults = ({
 };
 
 module.exports.createStore = () => {
-  const db = new Sequelize({
-    dialect: 'sqlite',
-    storage: './store.sqlite'
-  });
+  const db = new Sequelize('postgres://postgres:postgres@localhost:5432/postgres');
 
-  const users = db.define('user', {
+  const users = db.define('User', {
+    id: {
+      type: Sequelize.INTEGER,
+      autoIncrement: true,
+      primaryKey: true
+    },
     createdAt: Sequelize.DATE,
     updatedAt: Sequelize.DATE,
-    email: Sequelize.STRING,
-    profileImage: Sequelize.STRING,
+    username: Sequelize.STRING,
+    password: Sequelize.STRING,
     token: Sequelize.STRING,
   });
 
-  const trips = db.define('trip', {
-    createdAt: Sequelize.DATE,
-    updatedAt: Sequelize.DATE,
-    launchId: Sequelize.INTEGER,
-    userId: Sequelize.INTEGER,
-  });
 
-  return { db, users, trips };
+  users.sync()
+ 
+  db.authenticate()
+
+  return { db, users };
 };
