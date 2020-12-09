@@ -3,6 +3,14 @@ const isEmail = require('isemail');
 const mime = require('mime');
 const uuidv4 = require('uuid/v4');
 const { DataSource } = require('apollo-datasource');
+const {    getToken,
+  verifyToken,
+  encryptPassword,
+  comparePassword} = require('../auth-util')
+
+const {
+  AuthenticationError,
+} = require('apollo-server');
 
 class UserAPI extends DataSource {
   constructor({ store }) {
@@ -22,6 +30,27 @@ class UserAPI extends DataSource {
 
   async login({username, password}){
 
+    const users = await this.store.users.findAll({
+      where: {
+        username: username
+      }
+    })
+
+    if(users.length != 1) {
+      throw new AuthenticationError("Wrong Password!")
+
+    }
+
+    const user = users[0].dataValues
+
+    const isMatch = await comparePassword(password, user.password)
+    if (isMatch) {
+        const token = getToken(user)
+        return { token: token };
+    } else {
+        throw new AuthenticationError("Wrong Password!")
+    }
+
   }
 
 
@@ -36,19 +65,19 @@ class UserAPI extends DataSource {
   async createUser( {username, password} ){
 
 
-    const user = await this.store.users.create( {username: username, password: password})
+    const ePass = await encryptPassword(password)
+    const user = await this.store.users.create( {username: username, password: ePass})
+    // console.log("start, ")
+    // console.log(user)
 
-    console.log("start")
-    console.log(user)
+    const token = getToken(user.dataValues)
 
-    return {
-      id : String(user.dataValues.id),
-      username: user.dataValues.username,
-      createdAt: String(user.dataValues.createdAt),
-      updatedAt:String(user.dataValues.updatedAt),
-      token: user.dataValues.token
-    }
+    // console.log(token)
 
+    // console.log('token?')
+
+    return user.dataValues
+    
 
   }
 

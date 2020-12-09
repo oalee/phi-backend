@@ -45,6 +45,18 @@ module.exports.createStore = () => {
   });
 
 
+  const paylod = db.define('Payload', {
+    id: {
+      type: Sequelize.INTEGER,
+      autoIncrement: true,
+      primaryKey: true
+    },
+    createdAt: Sequelize.DATE,
+    updatedAt: Sequelize.DATE,
+    token: Sequelize.STRING,
+    userId: Sequelize.INTEGER
+  })
+
   users.sync()
  
   db.authenticate()
