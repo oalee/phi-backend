@@ -1,21 +1,22 @@
-const S3 = require('aws-sdk/clients/s3');
-const isEmail = require('isemail');
-const mime = require('mime');
-const uuidv4 = require('uuid/v4');
-const { DataSource } = require('apollo-datasource');
-const {    getToken,
+const S3 = require("aws-sdk/clients/s3");
+const isEmail = require("isemail");
+const mime = require("mime");
+const uuidv4 = require("uuid/v4");
+const { DataSource } = require("apollo-datasource");
+const {
+  getToken,
   verifyToken,
   encryptPassword,
-  comparePassword} = require('../auth-util')
+  comparePassword,
+} = require("../auth-util");
 
-const {
-  AuthenticationError,
-} = require('apollo-server');
+const { AuthenticationError } = require("apollo-server");
 
 class UserAPI extends DataSource {
   constructor({ store }) {
     super();
     this.store = store;
+    // console.log(store);
   }
 
   /**
@@ -28,57 +29,81 @@ class UserAPI extends DataSource {
     this.context = config.context;
   }
 
-  async login({username, password}){
-
+  async login({ username, password }) {
     const users = await this.store.users.findAll({
       where: {
-        username: username
-      }
-    })
+        username: username,
+      },
+    });
 
-    if(users.length != 1) {
-      throw new AuthenticationError("Wrong Password!")
-
+    if (users.length != 1) {
+      throw new AuthenticationError("Wrong Password!");
     }
 
-    const user = users[0].dataValues
+    const user = users[0].dataValues;
 
-    const isMatch = await comparePassword(password, user.password)
+    const isMatch = await comparePassword(password, user.password);
     if (isMatch) {
-        const token = getToken(user)
-        return { token: token };
+      const token = getToken(user);
+
+      const cd = await this.store.payload.create({
+        userId: user.id,
+        token: token,
+      });
+
+      return { token: token };
     } else {
-        throw new AuthenticationError("Wrong Password!")
+      throw new AuthenticationError("Wrong Password!");
     }
-
   }
 
+  async getAllUsers() {
+    const users = await this.store.users.findAll();
 
-  async getAllUsers(){
-
-    const users = await this.store.users.findAll()
-
-    console.log(users)
-    return users
+    console.log(users);
+    return users;
   }
 
-  async createUser( {username, password} ){
-
-
-    const ePass = await encryptPassword(password)
-    const user = await this.store.users.create( {username: username, password: ePass})
+  async createUser({ username, password }) {
+    const ePass = await encryptPassword(password);
+    const user = await this.store.users.create({
+      username: username,
+      password: ePass,
+    });
     // console.log("start, ")
     // console.log(user)
 
-    const token = getToken(user.dataValues)
+    const token = getToken(user.dataValues);
+
+    const cd = await this.store.payload.create({
+      userId: user.dataValues.id,
+      token: token,
+    });
 
     // console.log(token)
 
     // console.log('token?')
 
-    return user.dataValues
-    
+    return user.dataValues;
+  }
 
+  async getUserForAccessToken(token) {
+    console.log("\n\nfind user for token \n");
+    const tokens = await this.store.payload.findAll({
+      where: { token: token },
+    });
+
+    console.log(tokens);
+
+    if (tokens.length <= 0) throw new AuthenticationError("Invalid Token!");
+
+    const user = await this.store.users.findOne({
+      where: { id: tokens[0].dataValues.userId },
+    });
+
+    console.log(user);
+
+    return user.dataValues;
   }
 
   /**
@@ -130,7 +155,7 @@ class UserAPI extends DataSource {
       where: { userId },
     });
     return found && found.length
-      ? found.map(l => l.dataValues.launchId).filter(l => !!l)
+      ? found.map((l) => l.dataValues.launchId).filter((l) => !!l)
       : [];
   }
 
@@ -159,23 +184,23 @@ class UserAPI extends DataSource {
      * a unique filename for the upload
      */
     const { createReadStream, mimetype } = await file;
-    const filename = uuidv4() + '.' + mime.getExtension(mimetype);
+    const filename = uuidv4() + "." + mime.getExtension(mimetype);
 
     // Upload the file to an S3 bucket using the createReadStream
     const { AWS_S3_BUCKET } = process.env;
     await s3
       .upload({
-        ACL: 'public-read', // This will make the file publicly available
+        ACL: "public-read", // This will make the file publicly available
         Body: createReadStream(),
         Bucket: AWS_S3_BUCKET,
         Key: filename,
-        ContentType: mimetype
+        ContentType: mimetype,
       })
       .promise();
 
     // Save the profile image URL in the DB and return the updated user
     return this.context.user.update({
-      profileImage: `https://${AWS_S3_BUCKET}.s3.us-west-2.amazonaws.com/${filename}`
+      profileImage: `https://${AWS_S3_BUCKET}.s3.us-west-2.amazonaws.com/${filename}`,
     });
   }
 }

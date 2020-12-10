@@ -1,6 +1,4 @@
-const {
-  Sequelize
-} = require('sequelize');
+const { Sequelize } = require("sequelize");
 
 module.exports.paginateResults = ({
   after: cursor,
@@ -12,7 +10,7 @@ module.exports.paginateResults = ({
   if (pageSize < 1) return [];
 
   if (!cursor) return results.slice(0, pageSize);
-  const cursorIndex = results.findIndex(item => {
+  const cursorIndex = results.findIndex((item) => {
     // if an item has a `cursor` on it, use that, otherwise try to generate one
     let itemCursor = item.cursor ? item.cursor : getCursor(item);
 
@@ -20,25 +18,26 @@ module.exports.paginateResults = ({
     return itemCursor ? cursor === itemCursor : false;
   });
 
-  return cursorIndex >= 0 ?
-    cursorIndex === results.length - 1 // don't let us overflow
-    ?
-    [] :
-    results.slice(
-      cursorIndex + 1,
-      Math.min(results.length, cursorIndex + 1 + pageSize),
-    ) :
-    results.slice(0, pageSize);
+  return cursorIndex >= 0
+    ? cursorIndex === results.length - 1 // don't let us overflow
+      ? []
+      : results.slice(
+          cursorIndex + 1,
+          Math.min(results.length, cursorIndex + 1 + pageSize)
+        )
+    : results.slice(0, pageSize);
 };
 
 module.exports.createStore = () => {
-  const db = new Sequelize('postgres://postgres:postgres@localhost:5432/postgres');
+  const db = new Sequelize(
+    "postgres://postgres:postgres@localhost:5432/postgres"
+  );
 
-  const users = db.define('User', {
+  const users = db.define("User", {
     id: {
       type: Sequelize.INTEGER,
       autoIncrement: true,
-      primaryKey: true
+      primaryKey: true,
     },
     createdAt: Sequelize.DATE,
     updatedAt: Sequelize.DATE,
@@ -47,25 +46,26 @@ module.exports.createStore = () => {
     token: Sequelize.STRING,
   });
 
-
-  const paylod = db.define('Payload', {
+  const payload = db.define("Payloadz", {
     id: {
       type: Sequelize.INTEGER,
       autoIncrement: true,
-      primaryKey: true
+      primaryKey: true,
     },
     createdAt: Sequelize.DATE,
     updatedAt: Sequelize.DATE,
-    token: Sequelize.STRING,
-    userId: Sequelize.INTEGER
-  })
+    token: Sequelize.TEXT,
+    userId: Sequelize.INTEGER,
+  });
 
-  users.sync()
+  users.sync();
+  payload.sync();
 
-  db.authenticate()
+  db.authenticate();
 
   return {
     db,
-    users
+    users,
+    payload,
   };
 };

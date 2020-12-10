@@ -1,4 +1,4 @@
-const { paginateResults } = require('./utils');
+const { paginateResults } = require("./utils");
 
 module.exports = {
   Query: {
@@ -26,20 +26,17 @@ module.exports = {
     // },
     login: (_, { username, password }, { dataSources }) =>
       dataSources.userAPI.login({ username, password }),
-    users: async (_, __, { dataSources }) =>
-      dataSources.userAPI.getAllUsers(),
-  }
-  ,
+    users: async (_, __, { dataSources }) => dataSources.userAPI.getAllUsers(),
 
+    verifyToken: async (_, { token }, { dataSources }) => {
+      return dataSources.userAPI.getUserForAccessToken(token);
+    },
+  },
   Mutation: {
     addUser: async (_, { username, password }, { dataSources }) => {
-
-      return dataSources.userAPI.createUser( {username, password})
-
-    }
-
-
-  }
+      return dataSources.userAPI.createUser({ username, password });
+    },
+  },
   // ,
   // Mutation: {
   //   bookTrips: async (_, { launchIds }, { dataSources }) => {
