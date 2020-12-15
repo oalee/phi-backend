@@ -93,7 +93,7 @@ class UserAPI extends DataSource {
       where: { token: token },
     });
 
-    console.log(tokens);
+    // console.log(tokens);
 
     if (tokens.length <= 0) throw new AuthenticationError("Invalid Token!");
 
@@ -101,7 +101,7 @@ class UserAPI extends DataSource {
       where: { id: tokens[0].dataValues.userId },
     });
 
-    console.log(user);
+    // console.log(user);
 
     return user.dataValues;
   }
