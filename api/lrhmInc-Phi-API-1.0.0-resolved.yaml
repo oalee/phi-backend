@@ -1,0 +1,370 @@
+---
+openapi: 3.0.0
+info:
+  title: Simple Phi API
+  description: This is a simple Phi API
+  contact:
+    name: Ali
+    email: lrhm@pm.me
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  version: 1.0.0
+servers:
+- url: https://virtserver.swaggerhub.com/lrhmInc/Phi-API/1.0.0
+  description: SwaggerHub API Auto Mocking
+tags:
+- name: admins
+  description: Secured Admin-only calls
+- name: developers
+  description: Operations available to regular developers
+- name: public
+  description: Public calls
+paths:
+  /login:
+    get:
+      tags:
+      - public
+      operationId: login
+      parameters:
+      - name: username
+        in: query
+        required: true
+        style: form
+        explode: true
+        schema:
+          type: string
+      - name: password
+        in: query
+        required: true
+        style: form
+        explode: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: valid login
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenPayload'
+        "400":
+          description: bad input parameter
+  /user:
+    get:
+      tags:
+      - public
+      operationId: getUser
+      responses:
+        "200":
+          description: search results matching criteria
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        "400":
+          description: bad input parameter / no token
+          content:
+            text/plain:
+              schema:
+                type: string
+  /users:
+    get:
+      tags:
+      - admins
+      operationId: getUsers
+      responses:
+        "200":
+          description: search results matching criteria
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+        "400":
+          description: bad input parameter
+    post:
+      tags:
+      - admins
+      summary: adds an user
+      description: Adds an user to the system
+      operationId: addUser
+      requestBody:
+        description: User item to add
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+      responses:
+        "201":
+          description: item created
+          content:
+            text/plain:
+              schema:
+                type: string
+        "400":
+          description: invalid input, object invalid
+          content:
+            text/plain:
+              schema:
+                type: string
+        "409":
+          description: an existing item already exists
+          content:
+            text/plain:
+              schema:
+                type: string
+  /excercises:
+    get:
+      tags:
+      - public
+      summary: gets excersices
+      operationId: getExcersices
+      parameters:
+      - name: patientId
+        in: query
+        description: patientId
+        required: true
+        style: form
+        explode: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: search results matching criteria
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Excercise'
+        "400":
+          description: bad input parameter
+    post:
+      tags:
+      - public
+      summary: adds an excersie
+      description: Adds an excersice to the system
+      operationId: addExcersice
+      requestBody:
+        description: User item to add
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Excercise'
+      responses:
+        "201":
+          description: item created
+          content:
+            text/plain:
+              schema:
+                type: string
+        "400":
+          description: invalid input, object invalid
+          content:
+            text/plain:
+              schema:
+                type: string
+        "409":
+          description: an existing item already exists
+          content:
+            text/plain:
+              schema:
+                type: string
+components:
+  schemas:
+    User:
+      required:
+      - id
+      - type
+      - username
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: d290f1ee-6c54-4b01-90e6-d701748f0851
+        type:
+          type: string
+          enum:
+          - Admin
+          - Patient
+          - Therapist
+        username:
+          type: string
+          example: mamadreza
+        password:
+          type: string
+          example: $2b$10$5ysgXZUJi7MkJWhEhFcZTObGe18G1G.0rnXkewEtXq6ebVx1qpjYW
+        patientId:
+          type: string
+          example: 65432a
+        therapistId:
+          type: string
+          example: 65432a
+        therapist:
+          $ref: '#/components/schemas/Therapist'
+        patient:
+          $ref: '#/components/schemas/PatientInfo'
+    Excercise:
+      required:
+      - createdAt
+      - creator
+      - id
+      - longDescription
+      - pictures
+      - scheduleInfo
+      - shortDescription
+      - title
+      - updatedAt
+      - videos
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: d290f1ee-6c54-4b01-90e6-d701748f0851
+        title:
+          type: string
+          example: Widget Adapter
+        shortDescription:
+          type: string
+          example: d290f1ee-6c54-4b01-90e6-d701748f0851
+        longDescription:
+          type: string
+          example: Widget Adapter
+        pictures:
+          type: array
+          example: Widget Adapter
+          items:
+            type: string
+            format: url
+        videos:
+          type: array
+          example: Widget Adapter
+          items:
+            type: string
+            format: url
+        creator:
+          $ref: '#/components/schemas/Therapist'
+        updatedAt:
+          type: string
+          format: date-time
+          example: 2017-07-21T17:32:28Z
+        createdAt:
+          type: string
+          format: date-time
+          example: 2017-07-21T17:32:28Z
+        scheduleInfo:
+          $ref: '#/components/schemas/ScheduleInfo'
+    PatientInfo:
+      required:
+      - id
+      - name
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: d290f1ee-6c54-4b01-90e6-d701748f0851
+        name:
+          type: string
+          example: Widget Adapter
+        exercises:
+          type: array
+          items:
+            $ref: '#/components/schemas/Excercise'
+    Therapist:
+      required:
+      - excersices
+      - id
+      - name
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: d290f1ee-6c54-4b01-90e6-d701748f0851
+        name:
+          type: string
+          example: Widget Adapter
+        excersices:
+          type: array
+          items:
+            $ref: '#/components/schemas/Excercise'
+    Schedule:
+      required:
+      - excersice
+      - id
+      - patientId
+      - scheduleInfo
+      - therapistId
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: d290f1ee-6c54-4b01-90e6-d701748f0851
+        excersie:
+          $ref: '#/components/schemas/Excercise'
+        patiendId:
+          type: string
+          format: uuid
+          example: d290f1ee-6c54-4b01-90e6-d701748f0851
+        therapistId:
+          type: string
+          format: uuid
+          example: d290f1ee-6c54-4b01-90e6-d701748f0851
+        scheduleInfo:
+          $ref: '#/components/schemas/ScheduleInfo'
+    ScheduleInfo:
+      required:
+      - createdAt
+      - endDate
+      - id
+      - scheduleDays
+      - scheduleType
+      - startDate
+      - updatedAt
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: d290f1ee-6c54-4b01-90e6-d701748f0851
+        startDate:
+          type: string
+          format: date-time
+          example: 2017-07-21T17:32:28Z
+        endDate:
+          type: string
+          format: date-time
+          example: 2017-07-21T17:32:28Z
+        scheduleType:
+          type: string
+          enum:
+          - Daily
+          - TwoDays
+          - ThreeDays
+        scheduleDays:
+          type: array
+          items:
+            type: string
+            format: date-time
+            example: 2017-07-21T17:32:28Z
+        updatedAt:
+          type: string
+          format: date-time
+          example: 2017-07-21T17:32:28Z
+        createdAt:
+          type: string
+          format: date-time
+          example: 2017-07-21T17:32:28Z
+    TokenPayload:
+      required:
+      - token
+      type: object
+      properties:
+        token:
+          type: string

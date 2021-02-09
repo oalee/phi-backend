@@ -28,20 +28,20 @@ function context({ req }) {
   // simple auth check on every request
   const auth = (req.headers && req.headers.authorization) || "";
 
-  console.log(
-    `authentication header ${auth} ${req.headers} ${req.authorization}`
-  );
+  // console.log(
+  //   `authentication header ${auth} ${req.headers} ${req.authorization}`
+  // );
 
   // get the user token from the headers
   const token = req.headers.authentication || "";
 
-  console.log(`token is ${auth}`);
-  // console.log(req);
-  // console.log(dataSources);
-  // console.log(dataSources);
+  // console.log(`token is ${auth}`);
+  // // console.log(req);
+  // // console.log(dataSources);
+  // // console.log(dataSources);
 
-  // try to retrieve a user with the token
-  const user = dataSources().userAPI.getUserForAccessToken(token);
+  // // try to retrieve a user with the token
+  // const user = dataSources().userAPI.getUserForAccessToken(token);
 
   // console.log(req.body.operationName);
   // // optionally block the user
@@ -49,9 +49,9 @@ function context({ req }) {
   // if (!user)
   //   throw new AuthenticationError("you must be logged in to query this schema");
 
-  return {
-    user,
-  };
+  // return {
+  //   user,
+  // };
 }
 
 // Set up Apollo Server

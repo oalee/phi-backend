@@ -24,7 +24,7 @@ module.exports = {
     //       : false,
     //   };
     // },
-    login: (obj, { username, password }, context, info) => {
+    tokenPayload: (obj, { username, password }, context, info) => {
       // console.log(obj);
       // console.log(args);
       console.log(context);
@@ -34,13 +34,13 @@ module.exports = {
     },
     users: async (_, __, { dataSources }) => dataSources.userAPI.getAllUsers(),
 
-    verifyToken: async (_, { token }, { dataSources }) => {
-      return dataSources.userAPI.getUserForAccessToken(token);
-    },
+    // verifyToken: async (_, { token }, { dataSources }) => {
+    //   return dataSources.userAPI.getUserForAccessToken(token);
+    // },
   },
   Mutation: {
-    addUser: async (_, { username, password }, { dataSources, user }) => {
-      console.log(user);
+    addUser: async (_, args, { dataSources }) => {
+      console.log(args);
       return dataSources.userAPI.createUser({ username, password });
     },
   },

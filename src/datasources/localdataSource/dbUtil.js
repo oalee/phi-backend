@@ -139,7 +139,7 @@ module.exports.createStore = () => {
   scheduleInfo.beforeCreate((obj) => (obj.id = uuid()));
   therapist.beforeCreate((obj) => (obj.id = uuid()));
 
-  users.sync();
+  users.sync({ force: true });
   payload.sync();
   exercise.sync();
   patientInfo.sync();
