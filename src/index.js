@@ -5,7 +5,7 @@ const isEmail = require("isemail");
 
 const typeDefs = require("./schema");
 const resolvers = require("./resolvers");
-const { createStore } = require("./utils");
+const { createStore } = require("./datasources/localdataSource/dbUtil");
 
 const LaunchAPI = require("./datasources/launch");
 const UserAPI = require("./datasources/user");
@@ -24,29 +24,35 @@ const dataSources = () => ({
 });
 
 // the function that sets up the global context for each resolver, using the req
-const context = async ({ req }) => {
+function context({ req }) {
   // simple auth check on every request
   const auth = (req.headers && req.headers.authorization) || "";
 
-  const email = Buffer.from(auth, "base64").toString("ascii");
+  console.log(
+    `authentication header ${auth} ${req.headers} ${req.authorization}`
+  );
 
-  // if the email isn't formatted validly, return null for user
-  if (!isEmail.validate(email))
-    return {
-      user: null,
-    };
-  // find a user by their email
-  const users = await store.users.findOrCreate({
-    where: {
-      email,
-    },
-  });
-  const user = users && users[0] ? users[0] : null;
+  // get the user token from the headers
+  const token = req.headers.authentication || "";
+
+  console.log(`token is ${auth}`);
+  // console.log(req);
+  // console.log(dataSources);
+  // console.log(dataSources);
+
+  // try to retrieve a user with the token
+  const user = dataSources().userAPI.getUserForAccessToken(token);
+
+  // console.log(req.body.operationName);
+  // // optionally block the user
+  // // we could also check user roles/permissions here
+  // if (!user)
+  //   throw new AuthenticationError("you must be logged in to query this schema");
 
   return {
     user,
   };
-};
+}
 
 // Set up Apollo Server
 const server = new ApolloServer({

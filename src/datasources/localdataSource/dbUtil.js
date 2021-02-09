@@ -1,4 +1,5 @@
 const { Sequelize } = require("sequelize");
+const uuid = require("uuid/v4");
 
 module.exports.paginateResults = ({
   after: cursor,
@@ -35,8 +36,7 @@ module.exports.createStore = () => {
 
   const users = db.define("User", {
     id: {
-      type: Sequelize.INTEGER,
-      autoIncrement: true,
+      type: Sequelize.UUID,
       primaryKey: true,
     },
     createdAt: Sequelize.DATE,
@@ -44,19 +44,25 @@ module.exports.createStore = () => {
     username: Sequelize.STRING,
     password: Sequelize.STRING,
     token: Sequelize.STRING,
+
+    type: {
+      type: Sequelize.ENUM,
+      values: ["Admin", "Patient", "Therapist"],
+    },
   });
 
   const payload = db.define("Payloadz", {
     id: {
-      type: Sequelize.INTEGER,
-      autoIncrement: true,
+      type: Sequelize.UUID,
       primaryKey: true,
     },
     createdAt: Sequelize.DATE,
     updatedAt: Sequelize.DATE,
     token: Sequelize.TEXT,
-    userId: Sequelize.INTEGER,
+    userId: Sequelize.UUID,
   });
+  users.beforeCreate((user) => (user.id = uuid()));
+  payload.beforeCreate((payload) => (payload.id = uuid()));
 
   users.sync();
   payload.sync();

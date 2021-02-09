@@ -1,4 +1,4 @@
-const { paginateResults } = require("./utils");
+const { paginateResults } = require("./datasources/localdataSource/dbUtil");
 
 module.exports = {
   Query: {
@@ -24,8 +24,14 @@ module.exports = {
     //       : false,
     //   };
     // },
-    login: (_, { username, password }, { dataSources }) =>
-      dataSources.userAPI.login({ username, password }),
+    login: (obj, { username, password }, context, info) => {
+      // console.log(obj);
+      // console.log(args);
+      console.log(context);
+      // console.log(info);
+
+      return context.dataSources.userAPI.login({ username, password });
+    },
     users: async (_, __, { dataSources }) => dataSources.userAPI.getAllUsers(),
 
     verifyToken: async (_, { token }, { dataSources }) => {
@@ -33,7 +39,8 @@ module.exports = {
     },
   },
   Mutation: {
-    addUser: async (_, { username, password }, { dataSources }) => {
+    addUser: async (_, { username, password }, { dataSources, user }) => {
+      console.log(user);
       return dataSources.userAPI.createUser({ username, password });
     },
   },
