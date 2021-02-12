@@ -1,3 +1,4 @@
+const { dataSources } = require(".");
 const { paginateResults } = require("./datasources/localdataSource/dbUtil");
 
 module.exports = {
@@ -38,6 +39,14 @@ module.exports = {
     //   return dataSources.userAPI.getUserForAccessToken(token);
     // },
   },
+
+  User: {
+    patient: (root, args, context, info) => {
+      if (root.patientId)
+        return context.dataSources.userAPI.getPatientInfo(root);
+    },
+  },
+
   Mutation: {
     addUser: async (_, args, { dataSources }) => {
       console.log(args);

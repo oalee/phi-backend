@@ -63,10 +63,20 @@ class UserAPI extends DataSource {
   }
 
   async getAllUsers() {
-    const users = await this.store.users.findAll();
+    const users = await this.store.users
+      .findAll()
+      .map((user) => user.dataValues);
 
-    console.log(users);
+    // console.log(users);
     return users;
+  }
+
+  async getPatientInfo(user) {
+    const pInfo = await this.store.patientInfo.findOne({
+      where: { id: user.patientId },
+    });
+
+    return pInfo;
   }
 
   async createUser(userInput) {
@@ -75,13 +85,31 @@ class UserAPI extends DataSource {
     console.log(`create user  ${userInput.type} and ${new Date()}`);
     const ePass = await encryptPassword(userInput.password);
     const type = capitalizeFirstLetter(userInput.type);
-    const user = await this.store.users.create({
-      username: userInput.username,
-      password: ePass,
-      type: type,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    });
+    var user;
+    if (type == "Admin")
+      user = await this.store.users.create({
+        username: userInput.username,
+        password: ePass,
+        type: type,
+      });
+
+    if (type == "Patient") {
+      if (userInput.patient) {
+        const patient = await this.store.patientInfo.create({
+          name: userInput.patient.name,
+        });
+
+        console.log(`patient is ${patient.dataValues}`);
+
+        user = await this.store.users.create({
+          username: userInput.username,
+          password: ePass,
+          type: type,
+          patientId: patient.dataValues.id,
+        });
+      } else if (userInput.patientId) {
+      }
+    }
     // console.log("start, ")
     // console.log(user)
 
@@ -96,7 +124,7 @@ class UserAPI extends DataSource {
 
     // console.log('token?')
 
-    console.log(`user is ${user.dataValues}`);
+    // console.log(`user is ${user.dataValues}`);
 
     return user.dataValues;
   }

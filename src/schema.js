@@ -87,9 +87,9 @@ const typeDefs = gql`
   }
 
   enum Type {
-    ADMIN
-    PATIENT
-    THERAPIST
+    Admin
+    Patient
+    Therapist
   }
 
   type Mutation {
