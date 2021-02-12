@@ -12,6 +12,8 @@ const UserAPI = require("./datasources/user");
 
 const internalEngineDemo = require("./engine-demo");
 
+const { verifyToken } = require("./auth-util");
+
 // creates a sequelize connection once. NOT for every request
 const store = createStore();
 
@@ -24,7 +26,7 @@ const dataSources = () => ({
 });
 
 // the function that sets up the global context for each resolver, using the req
-function context({ req }) {
+async function context({ req }) {
   // simple auth check on every request
   const auth = (req.headers && req.headers.authorization) || "";
 
@@ -41,12 +43,18 @@ function context({ req }) {
   // // console.log(dataSources);
 
   // // try to retrieve a user with the token
-  if (token != "") {
-    const user = dataSources().userAPI.getUserForAccessToken(token);
-
+  // console.log(auth);
+  if (auth != "") {
+    const user = await dataSources().userAPI.getUserForAccessToken(auth);
+    // console.log(
+    //   `adding user to context ${user} and ${verifyToken(auth).payload}`
+    // );
     return {
       user,
     };
+  } else {
+    //auth is null , then only login should be available
+    // console.log(` ${Object.inspect(req)}`);
   }
   // console.log(req.body.operationName);
   // // optionally block the user

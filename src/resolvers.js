@@ -1,3 +1,4 @@
+const { AuthenticationError } = require("apollo-server");
 const { dataSources } = require(".");
 const { paginateResults } = require("./datasources/localdataSource/dbUtil");
 
@@ -25,15 +26,21 @@ module.exports = {
     //       : false,
     //   };
     // },
-    tokenPayload: (obj, args, context, info) => {
+    tokenPayload: (root, { username, password }, context, info) => {
       // console.log(obj);
       // console.log(args);
-      console.log(context);
+      // console.log(args);
       // console.log(info);
 
       return context.dataSources.userAPI.login({ username, password });
     },
-    users: async (_, __, { dataSources }) => dataSources.userAPI.getAllUsers(),
+    users: async (root, args, context, info) => {
+      console.log(context);
+      if (context.user == null) {
+        throw new AuthenticationError("API only available to logged in users");
+      } else if (context.user != null)
+        return context.dataSources.userAPI.getAllUsers();
+    },
 
     // verifyToken: async (_, { token }, { dataSources }) => {
     //   return dataSources.userAPI.getUserForAccessToken(token);
@@ -52,10 +59,13 @@ module.exports = {
   },
 
   Mutation: {
-    addUser: async (_, args, { dataSources }) => {
+    addUser: async (_, args, context) => {
       console.log(args);
-      const { username, password } = args.userInput;
-      return dataSources.userAPI.createUser(args.userInput);
+      if (context.user) {
+        return context.dataSources.userAPI.createUser(args.userInput);
+      } else {
+        throw new AuthenticationError("API not available for you");
+      }
     },
   },
   // ,

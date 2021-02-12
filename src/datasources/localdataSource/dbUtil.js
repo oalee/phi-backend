@@ -47,7 +47,10 @@ module.exports.createStore = () => {
       type: Sequelize.DATE,
       defaultValue: Sequelize.NOW,
     },
-    username: Sequelize.STRING,
+    username: {
+      type: Sequelize.STRING,
+      unique: true,
+    },
     password: Sequelize.STRING,
     // token: Sequelize.STRING,
 

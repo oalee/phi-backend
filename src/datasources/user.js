@@ -166,7 +166,7 @@ class UserAPI extends DataSource {
   }
 
   async getUserForAccessToken(token) {
-    console.log("\n\nfind user for token \n");
+    console.log("find user for token");
     const tokens = await this.store.payload.findAll({
       where: { token: token },
     });
@@ -174,14 +174,15 @@ class UserAPI extends DataSource {
     // console.log(tokens);
 
     if (tokens.length <= 0) throw new AuthenticationError("Invalid Token!");
+    else {
+      const user = await this.store.users.findOne({
+        where: { id: tokens[0].dataValues.userId },
+      });
 
-    const user = await this.store.users.findOne({
-      where: { id: tokens[0].dataValues.userId },
-    });
+      // console.log(user);
 
-    // console.log(user);
-
-    return user.dataValues;
+      return user.dataValues;
+    }
   }
 
   /**
