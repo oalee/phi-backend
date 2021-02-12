@@ -12,6 +12,11 @@ const {
 
 const { AuthenticationError } = require("apollo-server");
 
+function capitalizeFirstLetter(string) {
+  console.log(`capitilize this ${string}`);
+
+  return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
+}
 class UserAPI extends DataSource {
   constructor({ store }) {
     super();
@@ -64,25 +69,34 @@ class UserAPI extends DataSource {
     return users;
   }
 
-  async createUser({ username, password }) {
-    const ePass = await encryptPassword(password);
+  async createUser(userInput) {
+    console.log(`create user  ${userInput}`);
+
+    console.log(`create user  ${userInput.type} and ${new Date()}`);
+    const ePass = await encryptPassword(userInput.password);
+    const type = capitalizeFirstLetter(userInput.type);
     const user = await this.store.users.create({
-      username: username,
+      username: userInput.username,
       password: ePass,
+      type: type,
+      createdAt: new Date(),
+      updatedAt: new Date(),
     });
     // console.log("start, ")
     // console.log(user)
 
-    const token = getToken(user.dataValues);
+    // const token = getToken(user.dataValues);
 
-    const cd = await this.store.payload.create({
-      userId: user.dataValues.id,
-      token: token,
-    });
+    // const cd = await this.store.payload.create({
+    //   userId: user.dataValues.id,
+    //   token: token,
+    // });
 
     // console.log(token)
 
     // console.log('token?')
+
+    console.log(`user is ${user.dataValues}`);
 
     return user.dataValues;
   }

@@ -111,8 +111,7 @@ type Mutation {
 
 input ExcerciseInput {
   createdAt: String!
-  creator: TherapistInput!
-  id: ID!
+  creatorId: ID!
   longDescription: String!
   pictures: [String]!
   scheduleInfo: ScheduleInfoInput!
@@ -123,15 +122,12 @@ input ExcerciseInput {
 }
 
 input TherapistInput {
-  excersices: [ExcerciseInput]!
-  id: ID!
   name: String!
 }
 
 input ScheduleInfoInput {
   createdAt: String!
   endDate: String!
-  id: ID!
   scheduleDays: [String]!
   scheduleType: ScheduleType!
   startDate: String!
@@ -139,8 +135,7 @@ input ScheduleInfoInput {
 }
 
 input UserInput {
-  id: ID!
-  password: String
+  password: String!
   patient: PatientInfoInput
   patientId: String
   therapist: TherapistInput
@@ -150,7 +145,5 @@ input UserInput {
 }
 
 input PatientInfoInput {
-  exercises: [ExcerciseInput]
-  id: ID!
   name: String!
 }

@@ -41,17 +41,18 @@ function context({ req }) {
   // // console.log(dataSources);
 
   // // try to retrieve a user with the token
-  // const user = dataSources().userAPI.getUserForAccessToken(token);
+  if (token != "") {
+    const user = dataSources().userAPI.getUserForAccessToken(token);
 
+    return {
+      user,
+    };
+  }
   // console.log(req.body.operationName);
   // // optionally block the user
   // // we could also check user roles/permissions here
   // if (!user)
   //   throw new AuthenticationError("you must be logged in to query this schema");
-
-  // return {
-  //   user,
-  // };
 }
 
 // Set up Apollo Server

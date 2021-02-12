@@ -24,7 +24,7 @@ module.exports = {
     //       : false,
     //   };
     // },
-    tokenPayload: (obj, { username, password }, context, info) => {
+    tokenPayload: (obj, args, context, info) => {
       // console.log(obj);
       // console.log(args);
       console.log(context);
@@ -41,7 +41,8 @@ module.exports = {
   Mutation: {
     addUser: async (_, args, { dataSources }) => {
       console.log(args);
-      return dataSources.userAPI.createUser({ username, password });
+      const { username, password } = args.userInput;
+      return dataSources.userAPI.createUser(args.userInput);
     },
   },
   // ,

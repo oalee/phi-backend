@@ -39,8 +39,14 @@ module.exports.createStore = () => {
       type: Sequelize.UUID,
       primaryKey: true,
     },
-    createdAt: Sequelize.DATE,
-    updatedAt: Sequelize.DATE,
+    createdAt: {
+      type: Sequelize.DATE,
+      defaultValue: Sequelize.NOW,
+    },
+    updatedAt: {
+      type: Sequelize.DATE,
+      defaultValue: Sequelize.NOW,
+    },
     username: Sequelize.STRING,
     password: Sequelize.STRING,
     // token: Sequelize.STRING,
@@ -58,8 +64,14 @@ module.exports.createStore = () => {
       type: Sequelize.UUID,
       primaryKey: true,
     },
-    createdAt: Sequelize.DATE,
-    updatedAt: Sequelize.DATE,
+    createdAt: {
+      type: Sequelize.DATE,
+      defaultValue: Sequelize.NOW,
+    },
+    updatedAt: {
+      type: Sequelize.DATE,
+      defaultValue: Sequelize.NOW,
+    },
     title: Sequelize.STRING,
     shortDescription: Sequelize.STRING,
     longDescription: Sequelize.STRING,
@@ -78,8 +90,14 @@ module.exports.createStore = () => {
       type: Sequelize.UUID,
       primaryKey: true,
     },
-    createdAt: Sequelize.DATE,
-    updatedAt: Sequelize.DATE,
+    createdAt: {
+      type: Sequelize.DATE,
+      defaultValue: Sequelize.NOW,
+    },
+    updatedAt: {
+      type: Sequelize.DATE,
+      defaultValue: Sequelize.NOW,
+    },
     name: Sequelize.STRING,
   });
 
@@ -88,8 +106,14 @@ module.exports.createStore = () => {
       type: Sequelize.UUID,
       primaryKey: true,
     },
-    createdAt: Sequelize.DATE,
-    updatedAt: Sequelize.DATE,
+    createdAt: {
+      type: Sequelize.DATE,
+      defaultValue: Sequelize.NOW,
+    },
+    updatedAt: {
+      type: Sequelize.DATE,
+      defaultValue: Sequelize.NOW,
+    },
     name: Sequelize.STRING,
   });
 
@@ -98,8 +122,14 @@ module.exports.createStore = () => {
       type: Sequelize.UUID,
       primaryKey: true,
     },
-    createdAt: Sequelize.DATE,
-    updatedAt: Sequelize.DATE,
+    createdAt: {
+      type: Sequelize.DATE,
+      defaultValue: Sequelize.NOW,
+    },
+    updatedAt: {
+      type: Sequelize.DATE,
+      defaultValue: Sequelize.NOW,
+    },
     exerciseId: Sequelize.UUID,
     patientId: Sequelize.UUID,
     scheduleInfoId: Sequelize.UUID,
@@ -110,8 +140,14 @@ module.exports.createStore = () => {
       type: Sequelize.UUID,
       primaryKey: true,
     },
-    createdAt: Sequelize.DATE,
-    updatedAt: Sequelize.DATE,
+    createdAt: {
+      type: Sequelize.DATE,
+      defaultValue: Sequelize.NOW,
+    },
+    updatedAt: {
+      type: Sequelize.DATE,
+      defaultValue: Sequelize.NOW,
+    },
     startDate: Sequelize.DATE,
     endDate: Sequelize.DATE,
     scheduleDays: Sequelize.ARRAY(Sequelize.DATE),
@@ -126,8 +162,14 @@ module.exports.createStore = () => {
       type: Sequelize.UUID,
       primaryKey: true,
     },
-    createdAt: Sequelize.DATE,
-    updatedAt: Sequelize.DATE,
+    createdAt: {
+      type: Sequelize.DATE,
+      defaultValue: Sequelize.NOW,
+    },
+    updatedAt: {
+      type: Sequelize.DATE,
+      defaultValue: Sequelize.NOW,
+    },
     token: Sequelize.TEXT,
     userId: Sequelize.UUID,
   });

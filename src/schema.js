@@ -105,40 +105,32 @@ const typeDefs = gql`
 
     Equivalent to POST /users
     """
-    addUser(userInput: UserInput): String
+    addUser(userInput: UserInput): User
   }
 
   input ExcerciseInput {
-    createdAt: String!
-    creator: TherapistInput!
-    id: ID!
+    creator: ID
     longDescription: String!
     pictures: [String]!
     scheduleInfo: ScheduleInfoInput!
     shortDescription: String!
     title: String!
-    updatedAt: String!
     videos: [String]!
   }
 
   input TherapistInput {
-    excersices: [ExcerciseInput]!
-    id: ID!
     name: String!
   }
 
   input ScheduleInfoInput {
-    createdAt: String!
     endDate: String!
-    id: ID!
     scheduleDays: [String]!
     scheduleType: ScheduleType!
     startDate: String!
-    updatedAt: String!
   }
 
   input UserInput {
-    password: String
+    password: String!
     patient: PatientInfoInput
     patientId: String
     therapist: TherapistInput
@@ -148,8 +140,6 @@ const typeDefs = gql`
   }
 
   input PatientInfoInput {
-    exercises: [ExcerciseInput]
-    id: ID!
     name: String!
   }
 `;
