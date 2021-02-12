@@ -45,6 +45,10 @@ module.exports = {
       if (root.patientId)
         return context.dataSources.userAPI.getPatientInfo(root);
     },
+    therapist: (root, args, context, info) => {
+      if (root.therapistId)
+        return context.dataSources.userAPI.getTherapistInfo(root);
+    },
   },
 
   Mutation: {

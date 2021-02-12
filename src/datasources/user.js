@@ -10,7 +10,11 @@ const {
   comparePassword,
 } = require("../auth-util");
 
-const { AuthenticationError } = require("apollo-server");
+const {
+  ApolloError,
+  UserInputError,
+  AuthenticationError,
+} = require("apollo-server");
 
 function capitalizeFirstLetter(string) {
   console.log(`capitilize this ${string}`);
@@ -79,10 +83,17 @@ class UserAPI extends DataSource {
     return pInfo;
   }
 
+  async getTherapistInfo(user) {
+    const pInfo = await this.store.therapist.findOne({
+      where: { id: user.therapistId },
+    });
+
+    return pInfo;
+  }
+
   async createUser(userInput) {
     console.log(`create user  ${userInput}`);
 
-    console.log(`create user  ${userInput.type} and ${new Date()}`);
     const ePass = await encryptPassword(userInput.password);
     const type = capitalizeFirstLetter(userInput.type);
     var user;
@@ -92,7 +103,6 @@ class UserAPI extends DataSource {
         password: ePass,
         type: type,
       });
-
     if (type == "Patient") {
       if (userInput.patient) {
         const patient = await this.store.patientInfo.create({
@@ -107,7 +117,33 @@ class UserAPI extends DataSource {
           type: type,
           patientId: patient.dataValues.id,
         });
-      } else if (userInput.patientId) {
+      } else {
+        // throw error
+        throw new UserInputError(
+          "type is patient and there is no patient Input"
+        );
+      }
+    }
+
+    if (type == "Therapist") {
+      if (userInput.therapist) {
+        const therapist = await this.store.therapist.create({
+          name: userInput.therapist.name,
+        });
+
+        // console.log(`patient is ${patient.dataValues}`);
+
+        user = await this.store.users.create({
+          username: userInput.username,
+          password: ePass,
+          type: type,
+          therapistId: therapist.dataValues.id,
+        });
+      } else {
+        // throw error
+        throw new UserInputError(
+          "type is patient and there is no patient Input"
+        );
       }
     }
     // console.log("start, ")
