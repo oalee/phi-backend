@@ -14,15 +14,66 @@ const internalEngineDemo = require("./engine-demo");
 
 const { verifyToken } = require("./auth-util");
 
-// creates a sequelize connection once. NOT for every request
+const express = require("express");
+var throttle = require('express-throttle-bandwidth');
+var cors = require('cors')  //use this
+const multer = require("multer");
+
+const app = express();
+let whitelist = ['http://localhost:5000', 'http://localhost:3000']
+
+app.use(cors({
+  origin: function (origin, callback) {
+    // allow requests with no origin 
+    if (!origin) return callback(null, true);
+    if (whitelist.indexOf(origin) === -1) {
+      var message = 'The CORS policy for this origin doesn ' +
+        'allow access from the particular origin.';
+      return callback(new Error(message), false);
+    }
+    return callback(null, true);
+  }
+}));
+
+// app.use(throttle(100));
+
+// app.use(function (req, res, next) {
+//   res.header("Access-Control-Allow-Origin", "*");
+//   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+//   next();
+// });
+
+
+const upload = multer({ dest: "uploads/" });
+
+app.use(express.json());
+
+
+
 const store = createStore();
+
+const userAPI = new UserAPI({
+  store
+})
+
+app.post("/upload_image", upload.single("image"), uploadFiles);
+function uploadFiles(req, res) {
+  console.log(`uploading an image`)
+  console.log(req.body);
+  console.log(req.file)
+
+  // res.setHeader('Access-Control-Allow-Origin', '*');
+
+  res.json({ message: "Successfully uploaded files" });
+}
+app.listen(5000, () => {
+  console.log(`Upload Server started...`);
+});
 
 // set up any dataSources our resolvers need
 const dataSources = () => ({
   // launchAPI: new LaunchAPI(),
-  userAPI: new UserAPI({
-    store,
-  }),
+  userAPI: userAPI
 });
 
 // the function that sets up the global context for each resolver, using the req
@@ -45,7 +96,7 @@ async function context({ req }) {
   // // try to retrieve a user with the token
   // console.log(auth);
   if (auth != "") {
-    const user = await dataSources().userAPI.getUserForAccessToken(auth);
+    const user = await userAPI.getUserForAccessToken(auth);
     // console.log(
     //   `adding user to context ${user} and ${verifyToken(auth).payload}`
     // );

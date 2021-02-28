@@ -42,6 +42,14 @@ module.exports = {
         return context.dataSources.userAPI.getAllUsers();
     },
 
+    user :  async (root, args, context, info) => {
+      console.log(context);
+      if (context.user == null) {
+        throw new AuthenticationError("API only available to logged in users");
+      } else if (context.user != null)
+        return context.user
+    }, 
+
     // verifyToken: async (_, { token }, { dataSources }) => {
     //   return dataSources.userAPI.getUserForAccessToken(token);
     // },
