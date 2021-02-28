@@ -18,7 +18,8 @@ const express = require("express");
 var throttle = require('express-throttle-bandwidth');
 var cors = require('cors')  //use this
 const multer = require("multer");
-
+const { SHA3, SHA256 } = require("crypto-js");
+const fs = require('fs')
 const app = express();
 
 
@@ -38,18 +39,30 @@ app.use(cors({
 }));
 
 
+
 var storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, '/tmp/my-uploads')
+
+    const path = `uploads/${SHA256(req.local.user.username)}`
+    console.log(`storing in ${path}`)
+
+
+
+    fs.mkdir(path, { recursive: true }, (err) => {
+      if (err) throw err;
+    });
+
+    cb(null, path)
   },
   filename: function (req, file, cb) {
     const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9)
-    cb(null, file.fieldname + '-' + uniqueSuffix)
+    const type = file.originalname.split(".").pop()
+    cb(null, uniqueSuffix + "." + type)
   }
 })
 
 
-const upload = multer({ dest: "uploads/" });
+const upload = multer({ storage: storage });
 
 app.use(express.json());
 
@@ -67,8 +80,8 @@ const authChecker = async function (req, res, next) {
   if (auth != "") {
     const user = await userAPI.getUserForAccessToken(auth);
 
-    console.log(`user is logged, procceed to upload`)
-    req.local.user = user
+    console.log(`user is logged, procceed to upload ${user.username}`)
+    req.local = { user: user }
 
     return next()
   } else {
@@ -88,6 +101,9 @@ function uploadFiles(req, res) {
 
   res.json({ message: "Successfully uploaded files" });
 }
+
+app.use(express.static('uploads'))
+
 app.listen(5000, () => {
   console.log(`Upload Server started...`);
 });
@@ -104,13 +120,13 @@ async function context({ req }) {
   const auth = (req.headers && req.headers.authorization) || "";
 
   // console.log(
-  //   `authentication header ${auth} ${req.headers} ${req.authorization}`
+  //   `authentication header ${ auth } ${ req.headers } ${ req.authorization }`
   // );
 
   // get the user token from the headers
   const token = req.headers.authentication || "";
 
-  // console.log(`token is ${auth}`);
+  // console.log(`token is ${ auth }`);
   // // console.log(req);
   // // console.log(dataSources);
   // // console.log(dataSources);
@@ -120,14 +136,14 @@ async function context({ req }) {
   if (auth != "") {
     const user = await userAPI.getUserForAccessToken(auth);
     // console.log(
-    //   `adding user to context ${user} and ${verifyToken(auth).payload}`
+    //   `adding user to context ${ user } and ${ verifyToken(auth).payload }`
     // );
     return {
       user,
     };
   } else {
     //auth is null , then only login should be available
-    // console.log(` ${Object.inspect(req)}`);
+    // console.log(` ${ Object.inspect(req) }`);
   }
   // console.log(req.body.operationName);
   // // optionally block the user
@@ -154,7 +170,7 @@ if (process.env.NODE_ENV !== "test") {
       Server is running!
       Listening on port 4000
       Query at https://studio.apollographql.com/dev
-    `);
+  `);
   });
 }
 
