@@ -54,6 +54,7 @@ const verifyToken = (token) => {
   }
 };
 
+
 module.exports = {
   getToken,
   verifyToken,

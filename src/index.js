@@ -20,6 +20,8 @@ var cors = require('cors')  //use this
 const multer = require("multer");
 
 const app = express();
+
+
 let whitelist = ['http://localhost:5000', 'http://localhost:3000']
 
 app.use(cors({
@@ -35,13 +37,16 @@ app.use(cors({
   }
 }));
 
-// app.use(throttle(100));
 
-// app.use(function (req, res, next) {
-//   res.header("Access-Control-Allow-Origin", "*");
-//   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-//   next();
-// });
+var storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, '/tmp/my-uploads')
+  },
+  filename: function (req, file, cb) {
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9)
+    cb(null, file.fieldname + '-' + uniqueSuffix)
+  }
+})
 
 
 const upload = multer({ dest: "uploads/" });
@@ -56,13 +61,30 @@ const userAPI = new UserAPI({
   store
 })
 
-app.post("/upload_image", upload.single("image"), uploadFiles);
+
+const authChecker = async function (req, res, next) {
+  const auth = (req.headers && req.headers.authorization) || "";
+  if (auth != "") {
+    const user = await userAPI.getUserForAccessToken(auth);
+
+    console.log(`user is logged, procceed to upload`)
+    req.local.user = user
+
+    return next()
+  } else {
+    const err = new Error("Not authorized! Go back!");
+    err.status = 400;
+    return next(err)
+  }
+}
+
+app.post("/upload_image", authChecker, upload.single("image"), uploadFiles);
 function uploadFiles(req, res) {
   console.log(`uploading an image`)
+
   console.log(req.body);
   console.log(req.file)
 
-  // res.setHeader('Access-Control-Allow-Origin', '*');
 
   res.json({ message: "Successfully uploaded files" });
 }
