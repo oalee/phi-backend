@@ -21,7 +21,8 @@ const multer = require("multer");
 const { SHA3, SHA256 } = require("crypto-js");
 const fs = require('fs')
 const app = express();
-
+const sizeOf = require('image-size')
+const ffmpeg = require('fluent-ffmpeg');
 
 let whitelist = ['http://localhost:5000', 'http://localhost:3000']
 
@@ -37,6 +38,7 @@ app.use(cors({
     return callback(null, true);
   }
 }));
+
 
 
 
@@ -90,16 +92,95 @@ const authChecker = async function (req, res, next) {
     return next(err)
   }
 }
+function promisifyCommand(command, run = 'run') {
+  return Promise.promisify((...args) => {
+    const cb = args.pop()
+    command
+      .on('end', () => { cb(null) })
+      .on('error', (error) => { cb(error) })[run](...args)
+  })
+}
 
-app.post("/upload_image", authChecker, upload.single("image"), uploadFiles);
+
+function generateThumbnail(file) {
+  var picName = file.filename.split(".")[0] + ".jpeg"
+
+  return new Promise((resolve, reject) => {
+    ffmpeg(file.path).screenshots({
+      count: 1,
+      folder: file.destination,
+      filename: picName
+    })
+
+      .on('error', (err) => {
+        console.log(`[ffmpeg] error: ${err.message}`);
+        reject(err);
+      })
+      .on('end', () => {
+        console.log('[ffmpeg] finished');
+        resolve();
+      })
+  });
+}
+
+function proccesVideo(file) {
+  // console.log(file)
+
+
+  // ffmpeg(file.path).screenshots({
+  //   count: 1,
+  //   folder: file.destination,
+  //   filename: picName
+  // }).on("end", () => {
+  //   var fullPAth = file.destination + "/" + picName
+
+
+  // })
+
+  var picName = file.filename.split(".")[0] + ".jpeg"
+  var fullPAth = file.destination + "/" + picName
+
+
+  generateThumbnail(file).then(() => { }).catch((error) => { })
+
+
+  return {
+    // ...sizeOf(fullPAth),
+    placeHolder: "http://localhost:5000/" + fullPAth.slice(8)
+  }
+}
+
+app.post("/upload_image", authChecker, upload.single("file"), uploadFiles);
 function uploadFiles(req, res) {
   console.log(`uploading an image`)
 
-  console.log(req.body);
+  console.log(req.body.id);
   console.log(req.file)
 
+  // console.log(sizeOf(req.file.path))
 
-  res.json({ message: "Successfully uploaded files" });
+  if (req.body.type === "image")
+    res.json({
+      ...sizeOf(req.file.path), url: "http://localhost:5000/" + req.file.path.slice(8), id: req.body.id,
+      type: req.file.mimetype
+    });
+  else {
+
+    const fileValues = proccesVideo(req.file)
+    ffmpeg.ffprobe(req.file.path, (err, metadata) => {
+      // console.log(metadata);
+      res.json({
+        ...fileValues,
+        width: metadata.streams[0].width,
+        heigth: metadata.streams[0].height,
+        url: "http://localhost:5000/" + req.file.path.slice(8), id: req.body.id, type: req.file.mimetype
+      });
+    })
+
+    console.log("file is", fileValues)
+
+
+  }
 }
 
 app.use(express.static('uploads'))
