@@ -27,7 +27,7 @@ module.exports = {
     //   };
     // },
 
-    allExcercises: (root, args, context, info) => {
+    allExercises: (root, args, context, info) => {
 
       return context.dataSources.userAPI.getExcercies()
     },
@@ -83,9 +83,9 @@ module.exports = {
     },
 
 
-    addExcersice: async (root, args, context, info) => {
-      console.log("add excercise mutation")
-      return context.dataSources.userAPI.createExcercise(args.excerciseInput)
+    addExercise: async (root, args, context, info) => {
+      console.log("add exercise mutation", args)
+      return context.dataSources.userAPI.createExercise(args.exerciseInput)
     }
   },
   // ,

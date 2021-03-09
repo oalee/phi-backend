@@ -5,16 +5,16 @@ const typeDefs = gql`
     """
     gets excersices
 
-    Equivalent to GET /excercises
+    Equivalent to GET /exercises
     """
-    excercises(
+    exercises(
       """
       patientId
       """
       patientId: String!
-    ): [Excercise]
+    ): [Exercise]
 
-    allExcercises: [Excercise]
+    allExercises: [Exercise]
 
     """
     Equivalent to GET /login
@@ -32,7 +32,7 @@ const typeDefs = gql`
     users: [User]
   }
 
-  type Excercise {
+  type Exercise {
     createdAt: String
     updatedAt: String
     creator: Therapist
@@ -79,8 +79,8 @@ const typeDefs = gql`
 
   }
 
-  enum ExcerciseType{
-    Excercise,
+  enum ExerciseType{
+    Exercise,
     Educational
   }
 
@@ -99,7 +99,7 @@ const typeDefs = gql`
   }
 
   type Therapist {
-    excersices: [Excercise]!
+    excersices: [Exercise]!
     id: ID!
     name: String!
   }
@@ -136,7 +136,7 @@ const typeDefs = gql`
   }
 
   type PatientInfo {
-    exercises: [Excercise]
+    exercises: [Exercise]
     id: ID!
     name: String!
   }
@@ -151,9 +151,9 @@ const typeDefs = gql`
     """
     Adds an excersice to the system
 
-    Equivalent to POST /excercises
+    Equivalent to POST /exercises
     """
-    addExcersice(excerciseInput: ExcerciseInput): Excercise
+    addExercise(exerciseInput: ExerciseInput): Exercise
 
     """
     Adds an user to the system
@@ -163,12 +163,12 @@ const typeDefs = gql`
     addUser(userInput: UserInput): User
   }
 
-  input ExcerciseInput {
+  input ExerciseInput {
     longDescription: String!
     pictures: [URLHolderInput]!
     shortDescription: String!
     title: String!
-    type: ExcerciseType
+    type: ExerciseType
     videos: [URLHolderInput]!
     parameters: ParametersInput
     assesments: AssesmentsInput

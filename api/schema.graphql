@@ -7,7 +7,7 @@ type Query {
   excercises(
     """patientId"""
     patientId: String!
-  ): [Excercise]
+  ): [Exercise]
 
   """
   
@@ -31,7 +31,7 @@ type Query {
   users: [User]
 }
 
-type Excercise {
+type Exercise {
   createdAt: String!
   creator: Therapist!
   id: ID!
@@ -45,7 +45,7 @@ type Excercise {
 }
 
 type Therapist {
-  excersices: [Excercise]!
+  excersices: [Exercise]!
   id: ID!
   name: String!
 }
@@ -82,7 +82,7 @@ type User {
 }
 
 type PatientInfo {
-  exercises: [Excercise]
+  exercises: [Exercise]
   id: ID!
   name: String!
 }

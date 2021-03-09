@@ -93,38 +93,38 @@ class UserAPI extends DataSource {
 
   async getExcercies() {
 
-    var allExcercies = await this.store.excercise.findAll()
-    return allExcercies.map(val => val.dataValues).map(async (excercise) => {
-      console.log("excercise is ", excercise)
+    var allExcercies = await this.store.exercise.findAll()
+    return allExcercies.map(val => val.dataValues).map(async (exercise) => {
+      console.log("exercise is ", exercise)
       const pictures = await this.store.files.findAll({
-        where: { id: excercise.pictures[0] }
+        where: { id: exercise.pictures }
       })
       const videos = await this.store.files.findAll({
-        where: { id: excercise.videos[0] }
+        where: { id: exercise.videos }
       })
-      excercise.pictures = pictures
-      excercise.videos = videos
-      excercise.assesments = JSON.parse(excercise.assesments)
-      excercise.parameters = JSON.parse(excercise.parameters)
-      console.log(excercise.parameters)
+      exercise.pictures = pictures
+      exercise.videos = videos
+      exercise.assesments = JSON.parse(exercise.assesments)
+      exercise.parameters = JSON.parse(exercise.parameters)
+      console.log(exercise.parameters)
 
-      console.log(excercise.assesments)
-      console.log("returing ", excercise)
+      console.log(exercise.assesments)
+      console.log("returing ", exercise)
       // console.log(JSON.parse())
-      return excercise
+      return exercise
     })
 
 
     return allExcercies
   }
 
-  async createExcercise(excercise) {
+  async createExercise(exercise) {
 
-    console.log("creating excercise ", excercise)
+    console.log("creating exercise ", exercise)
 
-    for (var key in excercise.pictures) {
+    for (var key in exercise.pictures) {
       // console.log("create file ", file)
-      let file = excercise.pictures[key]
+      let file = exercise.pictures[key]
       await this.store.files.create({
         id: file.id,
         width: file.width,
@@ -137,8 +137,8 @@ class UserAPI extends DataSource {
     }
 
 
-    for (var key in excercise.videos) {
-      let file = excercise.videos[key]
+    for (var key in exercise.videos) {
+      let file = exercise.videos[key]
 
       await this.store.files.create({
         id: file.id,
@@ -151,19 +151,19 @@ class UserAPI extends DataSource {
       })
     }
 
-    // excercise.videos = excercise.videos.map( (val) => val.id )
-    // excercise.pictures = excercise.pictures.map( (val) => val.id )
+    // exercise.videos = exercise.videos.map( (val) => val.id )
+    // exercise.pictures = exercise.pictures.map( (val) => val.id )
 
-    const dbExcercise = await this.store.excercise.create({
-      ...excercise,
-      videos: excercise.videos.map((val) => val.id),
-      pictures: excercise.pictures.map((val) => val.id),
-      parameters: JSON.stringify(excercise.parameters),
-      assesments: JSON.stringify(excercise.assesments)
+    const dbExercise = await this.store.exercise.create({
+      ...exercise,
+      videos: exercise.videos.map((val) => val.id),
+      pictures: exercise.pictures.map((val) => val.id),
+      parameters: JSON.stringify(exercise.parameters),
+      assesments: JSON.stringify(exercise.assesments)
     })
 
 
-    return { ...excercise, id: dbExcercise.dataValues.id }
+    return { ...exercise, id: dbExercise.dataValues.id }
 
   }
 

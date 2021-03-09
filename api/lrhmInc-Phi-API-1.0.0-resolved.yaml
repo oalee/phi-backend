@@ -138,7 +138,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Excercise'
+                  $ref: '#/components/schemas/Exercise'
         "400":
           description: bad input parameter
     post:
@@ -152,7 +152,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Excercise'
+              $ref: '#/components/schemas/Exercise'
       responses:
         "201":
           description: item created
@@ -207,7 +207,7 @@ components:
           $ref: '#/components/schemas/Therapist'
         patient:
           $ref: '#/components/schemas/PatientInfo'
-    Excercise:
+    Exercise:
       required:
       - createdAt
       - creator
@@ -274,7 +274,7 @@ components:
         exercises:
           type: array
           items:
-            $ref: '#/components/schemas/Excercise'
+            $ref: '#/components/schemas/Exercise'
     Therapist:
       required:
       - excersices
@@ -292,7 +292,7 @@ components:
         excersices:
           type: array
           items:
-            $ref: '#/components/schemas/Excercise'
+            $ref: '#/components/schemas/Exercise'
     Schedule:
       required:
       - excersice
@@ -307,7 +307,7 @@ components:
           format: uuid
           example: d290f1ee-6c54-4b01-90e6-d701748f0851
         excersie:
-          $ref: '#/components/schemas/Excercise'
+          $ref: '#/components/schemas/Exercise'
         patiendId:
           type: string
           format: uuid

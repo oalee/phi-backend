@@ -62,7 +62,7 @@ module.exports.createStore = () => {
     therapistId: Sequelize.UUID,
   });
 
-  const excercise = db.define("Excercise", {
+  const exercise = db.define("Exercise", {
     id: {
       type: Sequelize.UUID,
       primaryKey: true,
@@ -89,7 +89,7 @@ module.exports.createStore = () => {
     },
     type: {
       type: Sequelize.ENUM,
-      values: ["Excercise", "Educational"],
+      values: ["Exercise", "Educational"],
     },
 
     creatorId: Sequelize.UUID, //TherapistId
@@ -164,7 +164,7 @@ module.exports.createStore = () => {
       type: Sequelize.DATE,
       defaultValue: Sequelize.NOW,
     },
-    excerciseId: Sequelize.UUID,
+    exerciseId: Sequelize.UUID,
     patientId: Sequelize.UUID,
     scheduleInfoId: Sequelize.UUID,
   });
@@ -209,7 +209,7 @@ module.exports.createStore = () => {
   });
   users.beforeCreate((user) => (user.id = uuid()));
   payload.beforeCreate((payload) => (payload.id = uuid()));
-  excercise.beforeCreate((obj) => (obj.id = uuid()));
+  exercise.beforeCreate((obj) => (obj.id = uuid()));
   patientInfo.beforeCreate((obj) => (obj.id = uuid()));
   schedule.beforeCreate((obj) => (obj.id = uuid()));
   scheduleInfo.beforeCreate((obj) => (obj.id = uuid()));
@@ -217,7 +217,7 @@ module.exports.createStore = () => {
 
   users.sync();
   payload.sync();
-  excercise.sync();
+  exercise.sync();
   patientInfo.sync();
   schedule.sync();
   scheduleInfo.sync();
@@ -230,7 +230,7 @@ module.exports.createStore = () => {
     db,
     users,
     payload,
-    excercise,
+    exercise,
     patientInfo,
     therapist,
     schedule,
