@@ -14,6 +14,8 @@ const typeDefs = gql`
       patientId: String!
     ): [Excercise]
 
+    allExcercises: [Excercise]
+
     """
     Equivalent to GET /login
     """
@@ -31,16 +33,69 @@ const typeDefs = gql`
   }
 
   type Excercise {
-    createdAt: String!
-    creator: Therapist!
+    createdAt: String
+    updatedAt: String
+    creator: Therapist
     id: ID!
     longDescription: String!
-    pictures: [String]!
-    scheduleInfo: ScheduleInfo!
+    pictures: [URLHolder]!
+    scheduleInfo: ScheduleInfo
     shortDescription: String!
     title: String!
-    updatedAt: String!
-    videos: [String]!
+    videos: [URLHolder]!
+    parameters: Parameters
+    assesments: Assesments
+  }
+
+  type Assesments{
+    tiredness: Assesment
+    dificulty: Assesment
+    shortnessOfBreath: Assesment
+    pain: Assesment
+
+  }
+  type Assesment{
+    enabled: Boolean!
+    name: String!
+
+  }
+
+
+  type Parameters{
+    sets: Parameter
+    reps: Parameter
+    repPerDay: Parameter
+    hold: Parameter
+    restPerSet: Parameter
+    totalDUration: Parameter
+  }
+
+  type Parameter{
+    enabled: Boolean!
+    name: String!
+    value: Int
+    secondValue: Int
+    valueType: ParameterType
+
+  }
+
+  enum ExcerciseType{
+    Excercise,
+    Educational
+  }
+
+  enum ParameterType{
+    rep,
+    time
+  }
+
+  type URLHolder{
+    url: String!
+    width: Int
+    height: Int
+    placeHolder: String
+    type: String
+    order: Int
   }
 
   type Therapist {
@@ -98,7 +153,7 @@ const typeDefs = gql`
 
     Equivalent to POST /excercises
     """
-    addExcersice(excerciseInput: ExcerciseInput): String
+    addExcersice(excerciseInput: ExcerciseInput): Excercise
 
     """
     Adds an user to the system
@@ -109,18 +164,64 @@ const typeDefs = gql`
   }
 
   input ExcerciseInput {
-    creator: ID
     longDescription: String!
-    pictures: [String]!
-    scheduleInfo: ScheduleInfoInput!
+    pictures: [URLHolderInput]!
     shortDescription: String!
     title: String!
-    videos: [String]!
+    type: ExcerciseType
+    videos: [URLHolderInput]!
+    parameters: ParametersInput
+    assesments: AssesmentsInput
+    state: String
   }
 
+  input URLHolderInput{
+    url: String!
+    width: Int
+    height: Int
+    placeHolder: String
+    type: String
+    id: ID
+    size: Int
+    order: Int
+  }
   input TherapistInput {
     name: String!
   }
+  input ParametersInput{
+    sets: ParameterInput
+    reps: ParameterInput
+    repPerDay: ParameterInput
+    hold: ParameterInput
+    restPerSet: ParameterInput
+    totalDuration: ParameterInput
+  }
+
+  input ParameterInput{
+    enabled: Boolean!
+    name: String!
+    title: String
+    value: Int
+    secondValue: Int
+    valueType: ParameterType
+
+  }
+
+  input AssesmentsInput{
+    tiredness: AssesmentInput
+    dificulty: AssesmentInput
+    shortnessOfBreath: AssesmentInput
+    pain: AssesmentInput
+
+  }
+  input AssesmentInput{
+    enabled: Boolean!
+    name: String!
+    title: String
+
+
+  }
+
 
   input ScheduleInfoInput {
     endDate: String!

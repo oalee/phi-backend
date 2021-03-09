@@ -162,7 +162,7 @@ function uploadFiles(req, res) {
   if (req.body.type === "image")
     res.json({
       ...sizeOf(req.file.path), url: "http://localhost:5000/" + req.file.path.slice(8), id: req.body.id,
-      type: req.file.mimetype
+      type: req.file.mimetype, size: req.file.size
     });
   else {
 
@@ -171,8 +171,9 @@ function uploadFiles(req, res) {
       // console.log(metadata);
       res.json({
         ...fileValues,
+         size: req.file.size,
         width: metadata.streams[0].width,
-        heigth: metadata.streams[0].height,
+        height: metadata.streams[0].height,
         url: "http://localhost:5000/" + req.file.path.slice(8), id: req.body.id, type: req.file.mimetype
       });
     })

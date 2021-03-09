@@ -62,7 +62,7 @@ module.exports.createStore = () => {
     therapistId: Sequelize.UUID,
   });
 
-  const exercise = db.define("Excercise", {
+  const excercise = db.define("Excercise", {
     id: {
       type: Sequelize.UUID,
       primaryKey: true,
@@ -77,7 +77,9 @@ module.exports.createStore = () => {
     },
     title: Sequelize.STRING,
     shortDescription: Sequelize.STRING,
-    longDescription: Sequelize.STRING,
+    longDescription: Sequelize.TEXT,
+
+    type: Sequelize.STRING,
 
     pictures: {
       type: Sequelize.ARRAY(Sequelize.STRING),
@@ -85,8 +87,37 @@ module.exports.createStore = () => {
     videos: {
       type: Sequelize.ARRAY(Sequelize.STRING),
     },
+    type: {
+      type: Sequelize.ENUM,
+      values: ["Excercise", "Educational"],
+    },
+
     creatorId: Sequelize.UUID, //TherapistId
+    parameters: Sequelize.TEXT,
+    assesments: Sequelize.TEXT
   });
+
+  const files = db.define("FileRecords", {
+    id: {
+      type: Sequelize.UUID,
+      primaryKey: true,
+    },
+    createdAt: {
+      type: Sequelize.DATE,
+      defaultValue: Sequelize.NOW,
+    },
+    updatedAt: {
+      type: Sequelize.DATE,
+      defaultValue: Sequelize.NOW,
+    },
+    url: Sequelize.STRING,
+    placeHolder: Sequelize.STRING,
+    size: Sequelize.INTEGER,
+    width: Sequelize.INTEGER,
+    height: Sequelize.INTEGER,
+    order: Sequelize.INTEGER
+
+  })
 
   const patientInfo = db.define("PatientInfo", {
     id: {
@@ -133,7 +164,7 @@ module.exports.createStore = () => {
       type: Sequelize.DATE,
       defaultValue: Sequelize.NOW,
     },
-    exerciseId: Sequelize.UUID,
+    excerciseId: Sequelize.UUID,
     patientId: Sequelize.UUID,
     scheduleInfoId: Sequelize.UUID,
   });
@@ -178,7 +209,7 @@ module.exports.createStore = () => {
   });
   users.beforeCreate((user) => (user.id = uuid()));
   payload.beforeCreate((payload) => (payload.id = uuid()));
-  exercise.beforeCreate((obj) => (obj.id = uuid()));
+  excercise.beforeCreate((obj) => (obj.id = uuid()));
   patientInfo.beforeCreate((obj) => (obj.id = uuid()));
   schedule.beforeCreate((obj) => (obj.id = uuid()));
   scheduleInfo.beforeCreate((obj) => (obj.id = uuid()));
@@ -186,11 +217,12 @@ module.exports.createStore = () => {
 
   users.sync();
   payload.sync();
-  exercise.sync();
+  excercise.sync();
   patientInfo.sync();
   schedule.sync();
   scheduleInfo.sync();
   therapist.sync();
+  files.sync()
 
   db.authenticate();
 
@@ -198,10 +230,11 @@ module.exports.createStore = () => {
     db,
     users,
     payload,
-    exercise,
+    excercise,
     patientInfo,
     therapist,
     schedule,
     scheduleInfo,
+    files
   };
 };

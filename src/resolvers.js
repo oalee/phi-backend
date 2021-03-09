@@ -26,6 +26,12 @@ module.exports = {
     //       : false,
     //   };
     // },
+
+    allExcercises: (root, args, context, info) => {
+
+      return context.dataSources.userAPI.getExcercies()
+    },
+
     tokenPayload: (root, { username, password }, context, info) => {
       // console.log(obj);
       // console.log(args);
@@ -75,6 +81,12 @@ module.exports = {
         throw new AuthenticationError("API not available for you");
       }
     },
+
+
+    addExcersice: async (root, args, context, info) => {
+      console.log("add excercise mutation")
+      return context.dataSources.userAPI.createExcercise(args.excerciseInput)
+    }
   },
   // ,
   // Mutation: {

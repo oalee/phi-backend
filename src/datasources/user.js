@@ -91,6 +91,82 @@ class UserAPI extends DataSource {
     return pInfo;
   }
 
+  async getExcercies() {
+
+    var allExcercies = await this.store.excercise.findAll()
+    return allExcercies.map(val => val.dataValues).map(async (excercise) => {
+      console.log("excercise is ", excercise)
+      const pictures = await this.store.files.findAll({
+        where: { id: excercise.pictures[0] }
+      })
+      const videos = await this.store.files.findAll({
+        where: { id: excercise.videos[0] }
+      })
+      excercise.pictures = pictures
+      excercise.videos = videos
+      excercise.assesments = JSON.parse(excercise.assesments)
+      excercise.parameters = JSON.parse(excercise.parameters)
+      console.log(excercise.parameters)
+
+      console.log(excercise.assesments)
+      console.log("returing ", excercise)
+      // console.log(JSON.parse())
+      return excercise
+    })
+
+
+    return allExcercies
+  }
+
+  async createExcercise(excercise) {
+
+    console.log("creating excercise ", excercise)
+
+    for (var key in excercise.pictures) {
+      // console.log("create file ", file)
+      let file = excercise.pictures[key]
+      await this.store.files.create({
+        id: file.id,
+        width: file.width,
+        height: file.height,
+        order: file.order,
+        size: file.size,
+        url: file.url
+      })
+
+    }
+
+
+    for (var key in excercise.videos) {
+      let file = excercise.videos[key]
+
+      await this.store.files.create({
+        id: file.id,
+        width: file.width,
+        height: file.height,
+        order: file.order,
+        size: file.size,
+        url: file.url,
+        placeHolder: file.placeHolder
+      })
+    }
+
+    // excercise.videos = excercise.videos.map( (val) => val.id )
+    // excercise.pictures = excercise.pictures.map( (val) => val.id )
+
+    const dbExcercise = await this.store.excercise.create({
+      ...excercise,
+      videos: excercise.videos.map((val) => val.id),
+      pictures: excercise.pictures.map((val) => val.id),
+      parameters: JSON.stringify(excercise.parameters),
+      assesments: JSON.stringify(excercise.assesments)
+    })
+
+
+    return { ...excercise, id: dbExcercise.dataValues.id }
+
+  }
+
   async createUser(userInput) {
     console.log(`create user  ${userInput}`);
 
