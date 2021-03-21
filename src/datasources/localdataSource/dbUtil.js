@@ -79,7 +79,7 @@ module.exports.createStore = () => {
     shortDescription: Sequelize.STRING,
     longDescription: Sequelize.TEXT,
 
-    type: Sequelize.STRING,
+    // type: Sequelize.STRING,
 
     pictures: {
       type: Sequelize.ARRAY(Sequelize.STRING),

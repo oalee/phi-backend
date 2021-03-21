@@ -45,8 +45,10 @@ const typeDefs = gql`
     videos: [URLHolder]!
     parameters: Parameters
     assesments: Assesments
+    type: ExerciseType
   }
 
+ 
   type Assesments{
     tiredness: Assesment
     dificulty: Assesment
@@ -57,6 +59,7 @@ const typeDefs = gql`
   type Assesment{
     enabled: Boolean!
     name: String!
+    title: String
 
   }
 
@@ -67,7 +70,7 @@ const typeDefs = gql`
     repPerDay: Parameter
     hold: Parameter
     restPerSet: Parameter
-    totalDUration: Parameter
+    totalDuration: Parameter
   }
 
   type Parameter{
@@ -76,6 +79,7 @@ const typeDefs = gql`
     value: Int
     secondValue: Int
     valueType: ParameterType
+    title: String
 
   }
 
