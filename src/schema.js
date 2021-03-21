@@ -46,6 +46,8 @@ const typeDefs = gql`
     parameters: Parameters
     assesments: Assesments
     type: ExerciseType
+    parentId: String
+    creatorId: String
   }
 
  
@@ -165,8 +167,23 @@ const typeDefs = gql`
     Equivalent to POST /users
     """
     addUser(userInput: UserInput): User
-  }
 
+    updateExercise(updateInput: UpdateInput): Exercise
+
+
+  }
+  input UpdateInput {
+    id: ID!
+    longDescription: String
+    pictures: [URLHolderInput]
+    shortDescription: String
+    title: String
+    type: ExerciseType
+    videos: [URLHolderInput]
+    parameters: ParametersInput
+    assesments: AssesmentsInput
+    state: String
+  }
   input ExerciseInput {
     longDescription: String!
     pictures: [URLHolderInput]!
@@ -177,6 +194,8 @@ const typeDefs = gql`
     parameters: ParametersInput
     assesments: AssesmentsInput
     state: String
+    parentId: String
+    
   }
 
   input URLHolderInput{

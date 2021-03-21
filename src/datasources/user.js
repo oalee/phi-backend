@@ -91,10 +91,12 @@ class UserAPI extends DataSource {
     return pInfo;
   }
 
-  async getExcercies() {
+  async getExcercies(userId) {
 
-    var allExcercies = await this.store.exercise.findAll()
-    return allExcercies.map(val => val.dataValues).map(async (exercise) => {
+    var allExcercies = await this.store.exercise.findAll({ where: { creatorId: userId } })
+    var publicExcercies = await this.store.publicExercise.findAll()
+
+    return [...allExcercies, ...publicExcercies].map(val => val.dataValues).map(async (exercise) => {
       console.log("exercise is ", exercise)
       const pictures = await this.store.files.findAll({
         where: { id: exercise.pictures }
@@ -118,7 +120,91 @@ class UserAPI extends DataSource {
     return allExcercies
   }
 
-  async createExercise(exercise) {
+  async updateExercise(exercise) {
+    console.log("updating exercise ", exercise)
+    var dbExercise = exercise
+
+    if (exercise.pictures) {
+      for (var key in exercise.pictures) {
+        // console.log("create file ", file)
+        let file = exercise.pictures[key]
+        await this.store.files.create({
+          id: file.id,
+          width: file.width,
+          height: file.height,
+          order: file.order,
+          size: file.size,
+          url: file.url
+        })
+
+      }
+
+      dbExercise.pictures = exercise.pictures.map((val) => val.id)
+
+    }
+
+    if (exercise.videos) {
+
+      for (var key in exercise.videos) {
+        let file = exercise.videos[key]
+
+        await this.store.files.create({
+          id: file.id,
+          width: file.width,
+          height: file.height,
+          order: file.order,
+          size: file.size,
+          url: file.url,
+          placeHolder: file.placeHolder
+        })
+
+        dbExercise.videos = exercise.videos.map((val) => val.id)
+
+      }
+    }
+
+    if (exercise.assesments) {
+      dbExercise.assesments = JSON.stringify(exercise.assesments)
+    }
+    if (exercise.parameters) {
+      dbExercise.parameters = JSON.stringify(exercise.parameters)
+
+    }
+
+    const res = await this.store.exercise.update({ ...dbExercise }, { where: { id: exercise.id }, returning: true, plain: true })
+
+    console.log('res is')
+    console.log(res)
+    console.log('val is ', res[1].dataValues)
+
+    console.log("exercise is ", resExercise)
+    const pictures = await this.store.files.findAll({
+      where: { id: resExercise.pictures }
+    })
+    const videos = await this.store.files.findAll({
+      where: { id: resExercise.videos }
+    })
+    console.log("videos are ", videos)
+    resExercise.pictures = pictures
+    resExercise.videos = videos
+    resExercise.assesments = JSON.parse(resExercise.assesments)
+    resExercise.parameters = JSON.parse(resExercise.parameters)
+    // console.log(resExercise.parameters)
+
+    // console.log(resExercise.assesments)
+    console.log("returing ", resExercise)
+    // console.log(JSON.parse())
+
+
+    // console.log(res)
+    return resExercise
+
+
+
+
+  }
+
+  async createExercise(exercise, creatorId) {
 
     console.log("creating exercise ", exercise)
 
@@ -159,7 +245,8 @@ class UserAPI extends DataSource {
       videos: exercise.videos.map((val) => val.id),
       pictures: exercise.pictures.map((val) => val.id),
       parameters: JSON.stringify(exercise.parameters),
-      assesments: JSON.stringify(exercise.assesments)
+      assesments: JSON.stringify(exercise.assesments),
+      creatorId: creatorId
     })
 
 

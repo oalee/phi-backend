@@ -29,7 +29,7 @@ module.exports = {
 
     allExercises: (root, args, context, info) => {
 
-      return context.dataSources.userAPI.getExcercies()
+      return context.dataSources.userAPI.getExcercies(context.user.id)
     },
 
     tokenPayload: (root, { username, password }, context, info) => {
@@ -85,7 +85,12 @@ module.exports = {
 
     addExercise: async (root, args, context, info) => {
       console.log("add exercise mutation", args)
-      return context.dataSources.userAPI.createExercise(args.exerciseInput)
+      return context.dataSources.userAPI.createExercise(args.exerciseInput, context.user.id)
+    },
+
+    updateExercise: async (root, args, context, info) => {
+      console.log("add exercise mutation", args)
+      return context.dataSources.userAPI.updateExercise(args.updateInput)
     }
   },
   // ,

@@ -92,11 +92,48 @@ module.exports.createStore = () => {
       values: ["Exercise", "Educational"],
     },
 
-    creatorId: Sequelize.UUID, //TherapistId
+    creatorId: Sequelize.TEXT, //TherapistId
     parameters: Sequelize.TEXT,
-    assesments: Sequelize.TEXT
+    assesments: Sequelize.TEXT,
+    parentId: Sequelize.TEXT
   });
 
+  const publicExercise = db.define("PublicExercise", {
+    id: {
+      type: Sequelize.UUID,
+      primaryKey: true,
+    },
+    createdAt: {
+      type: Sequelize.DATE,
+      defaultValue: Sequelize.NOW,
+    },
+    updatedAt: {
+      type: Sequelize.DATE,
+      defaultValue: Sequelize.NOW,
+    },
+    title: Sequelize.STRING,
+    shortDescription: Sequelize.STRING,
+    longDescription: Sequelize.TEXT,
+
+    // type: Sequelize.STRING,
+
+    pictures: {
+      type: Sequelize.ARRAY(Sequelize.STRING),
+    },
+    videos: {
+      type: Sequelize.ARRAY(Sequelize.STRING),
+    },
+    type: {
+      type: Sequelize.ENUM,
+      values: ["Exercise", "Educational"],
+    },
+
+    creatorId: Sequelize.TEXT, //TherapistId
+    parameters: Sequelize.TEXT,
+    assesments: Sequelize.TEXT,
+    parentId: Sequelize.TEXT
+
+  });
   const files = db.define("FileRecords", {
     id: {
       type: Sequelize.UUID,
@@ -214,6 +251,7 @@ module.exports.createStore = () => {
   schedule.beforeCreate((obj) => (obj.id = uuid()));
   scheduleInfo.beforeCreate((obj) => (obj.id = uuid()));
   therapist.beforeCreate((obj) => (obj.id = uuid()));
+  publicExercise.beforeCreate((obj) => (obj.id = uuid()));
 
   users.sync();
   payload.sync();
@@ -223,6 +261,7 @@ module.exports.createStore = () => {
   scheduleInfo.sync();
   therapist.sync();
   files.sync()
+  publicExercise.sync()
 
   db.authenticate();
 
@@ -235,6 +274,7 @@ module.exports.createStore = () => {
     therapist,
     schedule,
     scheduleInfo,
-    files
+    files,
+    publicExercise
   };
 };
