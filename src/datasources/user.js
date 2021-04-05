@@ -128,7 +128,7 @@ class UserAPI extends DataSource {
       for (var key in exercise.pictures) {
         // console.log("create file ", file)
         let file = exercise.pictures[key]
-        await this.store.files.create({
+        await this.store.files.upsert({
           id: file.id,
           width: file.width,
           height: file.height,
@@ -148,7 +148,7 @@ class UserAPI extends DataSource {
       for (var key in exercise.videos) {
         let file = exercise.videos[key]
 
-        await this.store.files.create({
+        await this.store.files.upsert({
           id: file.id,
           width: file.width,
           height: file.height,
@@ -173,20 +173,28 @@ class UserAPI extends DataSource {
 
     const res = await this.store.exercise.update({ ...dbExercise }, { where: { id: exercise.id }, returning: true, plain: true })
 
-    console.log('res is')
-    console.log(res)
-    console.log('val is ', res[1].dataValues)
+    // console.log('res is')
+    // console.log(res)
+    // console.log('val is ', res[1].dataValues)
 
-    console.log("exercise is ", resExercise)
+    var resExercise = res[1].dataValues
+    // console.log("exercise is ", resExercise)
     const pictures = await this.store.files.findAll({
       where: { id: resExercise.pictures }
     })
     const videos = await this.store.files.findAll({
       where: { id: resExercise.videos }
     })
-    console.log("videos are ", videos)
-    resExercise.pictures = pictures
-    resExercise.videos = videos
+    // console.log('test')
+    // console.log(videos)
+    // // videos.map(value => value.dataValues)
+    // console.log()
+    // console.log("videos are ", videos.map(value => value.dataValues)
+    // )
+    resExercise.pictures = pictures.map(value => value.dataValues)
+
+    resExercise.videos = videos.map(value => value.dataValues)
+
     resExercise.assesments = JSON.parse(resExercise.assesments)
     resExercise.parameters = JSON.parse(resExercise.parameters)
     // console.log(resExercise.parameters)

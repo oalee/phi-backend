@@ -171,7 +171,7 @@ function uploadFiles(req, res) {
       // console.log(metadata);
       res.json({
         ...fileValues,
-         size: req.file.size,
+        size: req.file.size,
         width: metadata.streams[0].width,
         height: metadata.streams[0].height,
         url: "http://localhost:5000/" + req.file.path.slice(8), id: req.body.id, type: req.file.mimetype
@@ -241,7 +241,7 @@ const server = new ApolloServer({
   dataSources,
   context,
   introspection: true,
-  playground: true,
+  playground: true
 });
 
 // Start our server if we're not in a test env.

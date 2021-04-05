@@ -102,6 +102,7 @@ const typeDefs = gql`
     placeHolder: String
     type: String
     order: Int
+    id: ID
   }
 
   type Therapist {
@@ -183,6 +184,7 @@ const typeDefs = gql`
     parameters: ParametersInput
     assesments: AssesmentsInput
     state: String
+    updatedAt: String
   }
   input ExerciseInput {
     longDescription: String!
