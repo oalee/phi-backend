@@ -262,12 +262,36 @@ class UserAPI extends DataSource {
 
   }
 
-  async createUser(userInput) {
+
+  async getMyPatients(currentUser) {
+
+    const patients = await this.store.patientInfo.findAll({ where: { therapistId: currentUser.therapistId } })
+
+    console.log('patients are ', patients)
+
+    const patientIdList = patients.map(i => i.dataValues.id)
+    const users = await this.store.users.findAll({ where: { patientId: patientIdList } })
+    const userValues = users.map(i => i.dataValues)
+    const res = patients.filter(i => i != null).map(i => {
+      console.log('mapping patients, ', i)
+      const user = userValues.find(val => val.patientId === i.id)
+      // console.log(user)
+      return { patientInfo: i.dataValues, ...user }
+    })
+
+    console.log(res)
+
+    return res
+  }
+
+  async createUser(userInput, currentUser) {
     console.log(`create user  ${userInput}`);
 
     const ePass = await encryptPassword(userInput.password);
     const type = capitalizeFirstLetter(userInput.type);
     var user;
+    var patient;
+
     if (type == "Admin")
       user = await this.store.users.create({
         username: userInput.username,
@@ -276,8 +300,11 @@ class UserAPI extends DataSource {
       });
     if (type == "Patient") {
       if (userInput.patient) {
-        const patient = await this.store.patientInfo.create({
+        patient = await this.store.patientInfo.create({
           name: userInput.patient.name,
+          age: userInput.patient.age,
+          weight: userInput.patient.weight,
+          therapistId: currentUser.therapistId
         });
 
         console.log(`patient is ${patient.dataValues}`);
@@ -332,6 +359,10 @@ class UserAPI extends DataSource {
     // console.log('token?')
 
     // console.log(`user is ${user.dataValues}`);
+
+    if (patient) {
+      return { ...user.dataValues, patient: patient.dataValues }
+    }
 
     return user.dataValues;
   }

@@ -32,6 +32,11 @@ module.exports = {
       return context.dataSources.userAPI.getExcercies(context.user.id)
     },
 
+    myPatients: (root, args, context, info) => {
+
+      return context.dataSources.userAPI.getMyPatients(context.user)
+    },
+
     tokenPayload: (root, { username, password }, context, info) => {
       // console.log(obj);
       // console.log(args);
@@ -76,7 +81,7 @@ module.exports = {
     addUser: async (_, args, context) => {
       console.log(args);
       if (context.user) {
-        return context.dataSources.userAPI.createUser(args.userInput);
+        return context.dataSources.userAPI.createUser(args.userInput, context.user);
       } else {
         throw new AuthenticationError("API not available for you");
       }

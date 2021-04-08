@@ -170,6 +170,10 @@ module.exports.createStore = () => {
       defaultValue: Sequelize.NOW,
     },
     name: Sequelize.STRING,
+    age: Sequelize.INTEGER,
+    weight: Sequelize.INTEGER,
+    therapistId: Sequelize.UUID
+
   });
 
   const therapist = db.define("Therapist", {

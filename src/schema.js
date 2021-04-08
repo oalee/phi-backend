@@ -30,6 +30,8 @@ const typeDefs = gql`
     Equivalent to GET /users
     """
     users: [User]
+
+    myPatients: [User]
   }
 
   type Exercise {
@@ -143,9 +145,11 @@ const typeDefs = gql`
   }
 
   type PatientInfo {
-    exercises: [Exercise]
+   
     id: ID!
     name: String!
+    age: Int
+    weight: Int
   }
 
   enum Type {
@@ -267,6 +271,8 @@ const typeDefs = gql`
 
   input PatientInfoInput {
     name: String!
+    age: Int
+    weight: Int
   }
 `;
 
