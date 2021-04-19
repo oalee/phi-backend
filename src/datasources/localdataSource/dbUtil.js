@@ -287,7 +287,8 @@ module.exports.createStore = () => {
     therapyDayId: Sequelize.UUID,
     exerciseId: Sequelize.UUID,
     exerciseTitle: Sequelize.STRING,
-    parameters: Sequelize.TEXT
+    parameters: Sequelize.TEXT,
+    enabled: Sequelize.BOOLEAN
   })
 
   const payload = db.define("Payloadz", {

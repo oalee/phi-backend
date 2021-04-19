@@ -144,10 +144,11 @@ const typeDefs = gql`
   }
 
   type ExerciseParameter{
-    parameter: Parameter
+    parameters: Parameters
     exerciseId: ID
     tite: String
     id: ID!
+    enabled: Boolean
   }
 
   enum ScheduleType {
@@ -318,9 +319,10 @@ const typeDefs = gql`
   }
 
   input ExerciseParameterInput{
-    parameter: ParameterInput!
+    parameters: ParametersInput!
     exerciseId: ID!
-    tite: String!
+    title: String!
+    enabled: Boolean!
   }
 
 `;

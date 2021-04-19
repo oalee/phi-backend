@@ -273,24 +273,30 @@ class UserAPI extends DataSource {
     })
 
     var therapyDays = []
-    for (var day in scheduleInput.days) {
+    console.log("schedule input is ", scheduleInput)
+    var i = 0
+    for (i = 0; i < scheduleInput.days.length; i++) {
+      let day = scheduleInput.days[i]
+      console.log("day is ", day)
       const therapyDayRes = await this.store.therapyDay.create({
         date: day.date,
         scheduleId: therpaySchduleRes.dataValues.id
       })
+      console.log("therapy day values are ", therapyDayRes.dataValues)
       var parameterExercises = []
       for (var exerciseAssesmet in day.parameters) {
         const parameterExerciseRes = await this.store.exerciseParameter.create({
           therapyDayId: therapyDayRes.dataValues.id,
           exerciseId: exerciseAssesmet.exerciseId,
           exerciseTitle: exerciseAssesmet.title,
-          parameters: JSON.stringify(exerciseAssesmet.parameter)
+          enabled: exerciseAssesmet.enabled,
+          parameters: JSON.stringify(exerciseAssesmet.parameters)
         })
         parameterExercises.push({
           id: parameterExerciseRes.dataValues.id,
           title: parameterExerciseRes.dataValues.exerciseTitle,
           exerciseId: parameterExerciseRes.dataValues.exerciseId,
-          parameter: JSON.parse(parameterExerciseRes.dataValues.parameters)
+          parameters: JSON.parse(parameterExerciseRes.dataValues.parameters)
         })
       }
 
@@ -304,6 +310,16 @@ class UserAPI extends DataSource {
 
 
     }
+
+    console.log("returning", {
+      id: therpaySchduleRes.dataValues.id,
+      createdAt: therpaySchduleRes.dataValues.createdAt,
+      updatedAt: therpaySchduleRes.dataValues.updatedAt,
+      startDate: therpaySchduleRes.dataValues.startDate,
+      endDate: therpaySchduleRes.dataValues.endDate,
+      exerciseIds: therpaySchduleRes.dataValues.exercises,
+      days: therapyDays
+    })
 
     return {
       id: therpaySchduleRes.dataValues.id,
