@@ -262,6 +262,62 @@ class UserAPI extends DataSource {
 
   }
 
+  async addSchedule(scheduleInput, patientId, therapistId) {
+
+    const therpaySchduleRes = await this.store.therapySchedule.create({
+      startDate: scheduleInput.startDate,
+      endDate: scheduleInput.endDate,
+      exercises: scheduleInput.exercises,
+      therapistId: therapistId,
+      patientId: patientId
+    })
+
+    var therapyDays = []
+    for (var day in scheduleInput.days) {
+      const therapyDayRes = await this.store.therapyDay.create({
+        date: day.date,
+        scheduleId: therpaySchduleRes.dataValues.id
+      })
+      var parameterExercises = []
+      for (var exerciseAssesmet in day.parameters) {
+        const parameterExerciseRes = await this.store.exerciseParameter.create({
+          therapyDayId: therapyDayRes.dataValues.id,
+          exerciseId: exerciseAssesmet.exerciseId,
+          exerciseTitle: exerciseAssesmet.title,
+          parameters: JSON.stringify(exerciseAssesmet.parameter)
+        })
+        parameterExercises.push({
+          id: parameterExerciseRes.dataValues.id,
+          title: parameterExerciseRes.dataValues.exerciseTitle,
+          exerciseId: parameterExerciseRes.dataValues.exerciseId,
+          parameter: JSON.parse(parameterExerciseRes.dataValues.parameters)
+        })
+      }
+
+      therapyDays.push({
+        id: therapyDayRes.dataValues.id,
+        createdAt: therapyDayRes.dataValues.createdAt,
+        updatedAt: therapyDayRes.dataValues.updatedAt,
+        date: therapyDayRes.dataValues.date,
+        parameters: parameterExercises
+      })
+
+
+    }
+
+    return {
+      id: therpaySchduleRes.dataValues.id,
+      createdAt: therpaySchduleRes.dataValues.createdAt,
+      updatedAt: therpaySchduleRes.dataValues.updatedAt,
+      startDate: therpaySchduleRes.dataValues.startDate,
+      endDate: therpaySchduleRes.dataValues.endDate,
+      exerciseIds: therpaySchduleRes.dataValues.exercises,
+      days: therapyDays
+    }
+
+
+
+  }
 
   async getMyPatients(currentUser) {
 

@@ -232,6 +232,64 @@ module.exports.createStore = () => {
     },
   });
 
+
+  const therapySchedule = db.define("TherapySchedule", {
+    id: {
+      type: Sequelize.UUID,
+      primaryKey: true,
+    },
+    createdAt: {
+      type: Sequelize.DATE,
+      defaultValue: Sequelize.NOW,
+    },
+    updatedAt: {
+      type: Sequelize.DATE,
+      defaultValue: Sequelize.NOW,
+    },
+    startDate: Sequelize.STRING,
+    endDate: Sequelize.STRING,
+    exercises: Sequelize.ARRAY(Sequelize.UUID),
+    patientId: Sequelize.UUID,
+    therapistId: Sequelize.UUID
+  });
+
+  const therapyDay = db.define("TherapyDay", {
+    id: {
+      type: Sequelize.UUID,
+      primaryKey: true,
+    },
+    createdAt: {
+      type: Sequelize.DATE,
+      defaultValue: Sequelize.NOW,
+    },
+    updatedAt: {
+      type: Sequelize.DATE,
+      defaultValue: Sequelize.NOW,
+    },
+    date: Sequelize.STRING,
+    scheduleId: Sequelize.UUID,
+
+  })
+
+  const exerciseParameter = db.define("ExerciseParameter", {
+    id: {
+      type: Sequelize.UUID,
+      primaryKey: true,
+    },
+    createdAt: {
+      type: Sequelize.DATE,
+      defaultValue: Sequelize.NOW,
+    },
+    updatedAt: {
+      type: Sequelize.DATE,
+      defaultValue: Sequelize.NOW,
+    },
+    therapyDayId: Sequelize.UUID,
+    exerciseId: Sequelize.UUID,
+    exerciseTitle: Sequelize.STRING,
+    parameters: Sequelize.TEXT
+  })
+
   const payload = db.define("Payloadz", {
     id: {
       type: Sequelize.UUID,
@@ -256,6 +314,9 @@ module.exports.createStore = () => {
   scheduleInfo.beforeCreate((obj) => (obj.id = uuid()));
   therapist.beforeCreate((obj) => (obj.id = uuid()));
   publicExercise.beforeCreate((obj) => (obj.id = uuid()));
+  therapyDay.beforeCreate((obj) => (obj.id = uuid()));
+  therapySchedule.beforeCreate((obj) => (obj.id = uuid()));
+  exerciseParameter.beforeCreate((obj) => (obj.id = uuid()));
 
   users.sync();
   payload.sync();
@@ -266,6 +327,10 @@ module.exports.createStore = () => {
   therapist.sync();
   files.sync()
   publicExercise.sync()
+  therapyDay.sync()
+  therapySchedule.sync()
+  exerciseParameter.sync()
+
 
   db.authenticate();
 
@@ -279,6 +344,9 @@ module.exports.createStore = () => {
     schedule,
     scheduleInfo,
     files,
-    publicExercise
+    publicExercise,
+    therapyDay,
+    therapySchedule,
+    exerciseParameter
   };
 };

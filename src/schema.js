@@ -123,6 +123,33 @@ const typeDefs = gql`
     updatedAt: String!
   }
 
+  type TherapySchedule {
+
+    id: ID!
+    updatedAt: String!
+    createdAt: String!
+    startDate: String!
+    endDate: String!
+    exercises: [Exercise]
+    exerciseIds: [ID]
+    days: [TherapyDay]
+  }
+
+  type TherapyDay{
+    id: ID!
+    updatedAt: String!
+    createdAt: String!
+    date: String!
+    parameters: [ExerciseParameter]
+  }
+
+  type ExerciseParameter{
+    parameter: Parameter
+    exerciseId: ID
+    tite: String
+    id: ID!
+  }
+
   enum ScheduleType {
     DAILY
     TWODAYS
@@ -175,6 +202,7 @@ const typeDefs = gql`
 
     updateExercise(updateInput: UpdateInput): Exercise
 
+    addTherapySchedule(therapyScheduleInput: TherapyScheduleInput, patientId: ID!): TherapySchedule
 
   }
   input UpdateInput {
@@ -274,6 +302,27 @@ const typeDefs = gql`
     age: Int
     weight: Int
   }
+
+  input TherapyScheduleInput {
+    id: ID
+    startDate: String!
+    endDate: String!
+    exercises: [ID]!
+    days: [TherapyDayInput]
+  }
+
+  input TherapyDayInput{
+    id: ID
+    date: String!
+    parameters: [ExerciseParameterInput]!
+  }
+
+  input ExerciseParameterInput{
+    parameter: ParameterInput!
+    exerciseId: ID!
+    tite: String!
+  }
+
 `;
 
 module.exports = typeDefs;

@@ -87,6 +87,12 @@ module.exports = {
       }
     },
 
+    addTherapySchedule: async (root, args, context, info) => {
+
+      return context.dataSources.userAPI.addSchedule(args.therapyScheduleInput, args.patientId, context.user.therapistId)
+
+    },
+
 
     addExercise: async (root, args, context, info) => {
       console.log("add exercise mutation", args)
