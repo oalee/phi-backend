@@ -37,6 +37,14 @@ module.exports = {
       return context.dataSources.userAPI.getMyPatients(context.user)
     },
 
+    getSchedule: (root, args, context, info) => {
+      if (context.user == null) {
+        throw new AuthenticationError("API only available to logged in users");
+      } else if (context.user != null)
+        return context.dataSources.userAPI.getSchedule(args.patientId);
+    }
+    ,
+
     tokenPayload: (root, { username, password }, context, info) => {
       // console.log(obj);
       // console.log(args);

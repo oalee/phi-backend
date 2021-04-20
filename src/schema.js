@@ -32,6 +32,8 @@ const typeDefs = gql`
     users: [User]
 
     myPatients: [User]
+
+    getSchedule(patientId: ID!): TherapySchedule
   }
 
   type Exercise {

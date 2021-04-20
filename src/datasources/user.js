@@ -262,6 +262,65 @@ class UserAPI extends DataSource {
 
   }
 
+  async getSchedule(patientId) {
+
+
+    const therpaySchduleRes = await this.store.therapySchedule.findOne({
+      where: {
+        patientId: patientId
+      }
+    })
+
+    const therapyDayRes = await this.store.therapyDay.findAll({
+      where: {
+        scheduleId: therpaySchduleRes.dataValues.id
+      }
+    })
+
+    const days = therapyDayRes.map(item => item.dataValues)
+    var resDays = []
+    for (let index = 0; index < days.length; index++) {
+      const day = days[index];
+
+      const paramPerExercise = await this.store.exerciseParameter.findAll({
+        where: {
+          therapyDayId: day.id
+        }
+      })
+
+      const transformedParams = paramPerExercise.map(val => val.dataValues).map(val => {
+        return {
+          id: val.id,
+          title: val.exerciseTitle,
+          exerciseId: val.exerciseId,
+          parameters: JSON.parse(val.parameters)
+        }
+      })
+
+      resDays.push({
+        parameters: transformedParams,
+        date: day.date,
+        id: day.id,
+        createdAt: day.createdAt,
+        updatedAt: day.updatedAt,
+
+      })
+
+    }
+
+    return {
+      id: therapyDayRes.dataValues.id,
+      startDate: therpaySchduleRes.dataValues.startDate,
+      endDate: therpaySchduleRes.dataValues.endDate,
+      exerciseIds: therpaySchduleRes.dataValues.exercises,
+      therapistId: therpaySchduleRes.dataValues.therapistId,
+      patientId: therapyDayRes.dataValues.patientId,
+      days: resDays
+
+    }
+
+  }
+
   async addSchedule(scheduleInput, patientId, therapistId) {
 
     const therpaySchduleRes = await this.store.therapySchedule.create({
@@ -284,13 +343,15 @@ class UserAPI extends DataSource {
       })
       console.log("therapy day values are ", therapyDayRes.dataValues)
       var parameterExercises = []
-      for (var exerciseAssesmet in day.parameters) {
+      var j = 0;
+      for (j = 0; j < day.parameters.length; j++) {
+        let dayParam = day.parameters[j]
         const parameterExerciseRes = await this.store.exerciseParameter.create({
           therapyDayId: therapyDayRes.dataValues.id,
-          exerciseId: exerciseAssesmet.exerciseId,
-          exerciseTitle: exerciseAssesmet.title,
-          enabled: exerciseAssesmet.enabled,
-          parameters: JSON.stringify(exerciseAssesmet.parameters)
+          exerciseId: dayParam.exerciseId,
+          exerciseTitle: dayParam.title,
+          enabled: dayParam.enabled,
+          parameters: JSON.stringify(dayParam.parameters)
         })
         parameterExercises.push({
           id: parameterExerciseRes.dataValues.id,
