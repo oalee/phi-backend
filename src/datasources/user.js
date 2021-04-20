@@ -271,6 +271,11 @@ class UserAPI extends DataSource {
       }
     })
 
+    if (therpaySchduleRes === null)
+      return null
+
+    console.log("first res is ", therpaySchduleRes)
+
     const therapyDayRes = await this.store.therapyDay.findAll({
       where: {
         scheduleId: therpaySchduleRes.dataValues.id
@@ -278,10 +283,12 @@ class UserAPI extends DataSource {
     })
 
     const days = therapyDayRes.map(item => item.dataValues)
+    console.log("day res ", therpaySchduleRes)
+
     var resDays = []
     for (let index = 0; index < days.length; index++) {
       const day = days[index];
-
+      console.log("day is ", day)
       const paramPerExercise = await this.store.exerciseParameter.findAll({
         where: {
           therapyDayId: day.id
@@ -293,9 +300,12 @@ class UserAPI extends DataSource {
           id: val.id,
           title: val.exerciseTitle,
           exerciseId: val.exerciseId,
-          parameters: JSON.parse(val.parameters)
+          parameters: JSON.parse(val.parameters),
+          enabled: val.enabled
         }
       })
+      console.log("param per ex", paramPerExercise)
+      console.log("transformed", transformedParams)
 
       resDays.push({
         parameters: transformedParams,
@@ -307,14 +317,18 @@ class UserAPI extends DataSource {
       })
 
     }
+    console.log("final day res ", resDays)
 
     return {
-      id: therapyDayRes.dataValues.id,
+      updatedAt: therpaySchduleRes.dataValues.updatedAt,
+
+      createdAt: therpaySchduleRes.dataValues.updatedAt,
+      id: therpaySchduleRes.dataValues.id,
       startDate: therpaySchduleRes.dataValues.startDate,
       endDate: therpaySchduleRes.dataValues.endDate,
       exerciseIds: therpaySchduleRes.dataValues.exercises,
       therapistId: therpaySchduleRes.dataValues.therapistId,
-      patientId: therapyDayRes.dataValues.patientId,
+      patientId: therpaySchduleRes.dataValues.patientId,
       days: resDays
 
     }

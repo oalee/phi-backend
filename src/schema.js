@@ -148,7 +148,7 @@ const typeDefs = gql`
   type ExerciseParameter{
     parameters: Parameters
     exerciseId: ID
-    tite: String
+    title: String
     id: ID!
     enabled: Boolean
   }
@@ -180,6 +180,7 @@ const typeDefs = gql`
     name: String!
     age: Int
     weight: Int
+    schedule: TherapySchedule
   }
 
   enum Type {

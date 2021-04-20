@@ -85,6 +85,14 @@ module.exports = {
     },
   },
 
+  PatientInfo: {
+    schedule: (root, args, context, info) => {
+      if (root.id)
+        return context.dataSources.userAPI.getSchedule(root.id);
+    },
+
+  },
+
   Mutation: {
     addUser: async (_, args, context) => {
       console.log(args);
