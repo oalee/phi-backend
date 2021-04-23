@@ -208,6 +208,8 @@ const typeDefs = gql`
 
     addTherapySchedule(therapyScheduleInput: TherapyScheduleInput, patientId: ID!): TherapySchedule
 
+    updateTherapySchedule(updateInput: UpdateTherapyScheduleInput!, patientId: ID!): TherapySchedule
+
   }
   input UpdateInput {
     id: ID!
@@ -314,7 +316,13 @@ const typeDefs = gql`
     exercises: [ID]!
     days: [TherapyDayInput]
   }
-
+  input UpdateTherapyScheduleInput {
+    id: ID!
+    startDate: String
+    endDate: String
+    exercises: [ID]
+    days: [TherapyDayInput]
+  }
   input TherapyDayInput{
     id: ID
     date: String!
@@ -326,6 +334,7 @@ const typeDefs = gql`
     exerciseId: ID!
     title: String!
     enabled: Boolean!
+    id: ID
   }
 
 `;

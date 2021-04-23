@@ -238,11 +238,11 @@ module.exports.createStore = () => {
       type: Sequelize.UUID,
       primaryKey: true,
     },
-    createdAt: {
-      type: Sequelize.DATE,
-      defaultValue: Sequelize.NOW,
-    },
-    updatedAt: {
+    // createdAt: {
+    //   type: Sequelize.DATE,
+    //   defaultValue: Sequelize.NOW,
+    // },
+    lastUpdate: {
       type: Sequelize.DATE,
       defaultValue: Sequelize.NOW,
     },
@@ -258,14 +258,14 @@ module.exports.createStore = () => {
       type: Sequelize.UUID,
       primaryKey: true,
     },
-    createdAt: {
-      type: Sequelize.DATE,
-      defaultValue: Sequelize.NOW,
-    },
-    updatedAt: {
-      type: Sequelize.DATE,
-      defaultValue: Sequelize.NOW,
-    },
+    // createdAt: {
+    //   type: Sequelize.DATE,
+    //   defaultValue: Sequelize.NOW,
+    // },
+    // updatedAt: {
+    //   type: Sequelize.DATE,
+    //   defaultValue: Sequelize.NOW,
+    // },
     date: Sequelize.STRING,
     scheduleId: Sequelize.UUID,
 
@@ -276,14 +276,14 @@ module.exports.createStore = () => {
       type: Sequelize.UUID,
       primaryKey: true,
     },
-    createdAt: {
-      type: Sequelize.DATE,
-      defaultValue: Sequelize.NOW,
-    },
-    updatedAt: {
-      type: Sequelize.DATE,
-      defaultValue: Sequelize.NOW,
-    },
+    // createdAt: {
+    //   type: Sequelize.DATE,
+    //   defaultValue: Sequelize.NOW,
+    // },
+    // updatedAt: {
+    //   type: Sequelize.DATE,
+    //   defaultValue: Sequelize.NOW,
+    // },
     therapyDayId: Sequelize.UUID,
     exerciseId: Sequelize.UUID,
     exerciseTitle: Sequelize.STRING,
@@ -296,14 +296,14 @@ module.exports.createStore = () => {
       type: Sequelize.UUID,
       primaryKey: true,
     },
-    createdAt: {
-      type: Sequelize.DATE,
-      defaultValue: Sequelize.NOW,
-    },
-    updatedAt: {
-      type: Sequelize.DATE,
-      defaultValue: Sequelize.NOW,
-    },
+    // createdAt: {
+    //   type: Sequelize.DATE,
+    //   defaultValue: Sequelize.NOW,
+    // },
+    // updatedAt: {
+    //   type: Sequelize.DATE,
+    //   defaultValue: Sequelize.NOW,
+    // },
     token: Sequelize.TEXT,
     userId: Sequelize.UUID,
   });

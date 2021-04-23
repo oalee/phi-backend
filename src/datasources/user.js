@@ -262,6 +262,7 @@ class UserAPI extends DataSource {
 
   }
 
+
   async getSchedule(patientId) {
 
 
@@ -274,7 +275,7 @@ class UserAPI extends DataSource {
     if (therpaySchduleRes === null)
       return null
 
-    console.log("first res is ", therpaySchduleRes)
+    // console.log("first res is ", therpaySchduleRes)
 
     const therapyDayRes = await this.store.therapyDay.findAll({
       where: {
@@ -283,12 +284,12 @@ class UserAPI extends DataSource {
     })
 
     const days = therapyDayRes.map(item => item.dataValues)
-    console.log("day res ", therpaySchduleRes)
+    // console.log("day res ", therpaySchduleRes)
 
     var resDays = []
     for (let index = 0; index < days.length; index++) {
       const day = days[index];
-      console.log("day is ", day)
+      // console.log("day is ", day)
       const paramPerExercise = await this.store.exerciseParameter.findAll({
         where: {
           therapyDayId: day.id
@@ -304,8 +305,8 @@ class UserAPI extends DataSource {
           enabled: val.enabled
         }
       })
-      console.log("param per ex", paramPerExercise)
-      console.log("transformed", transformedParams)
+      // console.log("param per ex", paramPerExercise)
+      // console.log("transformed", transformedParams)
 
       resDays.push({
         parameters: transformedParams,
@@ -317,7 +318,7 @@ class UserAPI extends DataSource {
       })
 
     }
-    console.log("final day res ", resDays)
+    // console.log("final day res ", resDays)
 
     return {
       updatedAt: therpaySchduleRes.dataValues.updatedAt,
@@ -335,7 +336,142 @@ class UserAPI extends DataSource {
 
   }
 
+
+  async updateSchedule(scheduleInput, patientId, therapistId) {
+
+    console.log("update ", scheduleInput)
+    const tempRes = await this.store.therapySchedule.update({ ...scheduleInput, lastUpdate: new Date() }, { where: { id: scheduleInput.id }, returning: true, plain: true })
+    const therpaySchduleRes = tempRes[1]
+    // console.log(tempRes[0])
+    // console.log("updateRes ", therpaySchduleRes)
+
+    var therapyDays = []
+    var i = 0
+    for (i = 0; i < scheduleInput.days.length; i++) {
+      let day = scheduleInput.days[i]
+      console.log("for day", day)
+      var dbDay = { date: day.date }
+
+      var tempDayRes
+      var therapyDayRes
+      if (!day.id)
+        therapyDayRes = await this.store.therapyDay.create({
+          ...dbDay,
+          scheduleId: therpaySchduleRes.dataValues.id
+        }, { returning: true, plain: true })
+      else {
+        tempDayRes = await this.store.therapyDay.update({
+          ...dbDay,
+          scheduleId: therpaySchduleRes.dataValues.id
+        }, { where: { id: day.id }, returning: true, plain: true })
+        therapyDayRes = tempDayRes[1]
+      }
+      // const therapyDayRes = tempDayRes[0]
+      // console.log("therapy day values are ", therapyDayRes)
+      // console.log("therapy day values are ", therapyDayRes.dataValues.id)
+
+      var parameterExercises = []
+      var j = 0;
+      for (j = 0; j < day.parameters.length; j++) {
+        let dayParam = day.parameters[j]
+        dayParam.title = dayParam.exerciseTitle
+        dayParam.exerciseTitle = undefined
+        var paramTemp
+
+        if (!dayParam.id)
+          paramTemp = await this.store.exerciseParameter.insert({
+            therapyDayId: therapyDayRes.dataValues.id,
+            ...dayParam,
+            parameters: JSON.stringify(dayParam.parameters)
+          }, { returning: true, plain: true })
+        else {
+          paramTemp = await this.store.exerciseParameter.update({
+            therapyDayId: therapyDayRes.dataValues.id,
+            ...dayParam,
+            parameters: JSON.stringify(dayParam.parameters)
+          }, { where: { id: dayParam.id }, returning: true, plain: true })
+        }
+
+        const parameterExerciseRes = paramTemp[0]
+        // parameterExercises.push({
+        //   id: parameterExerciseRes.dataValues.id,
+        //   title: parameterExerciseRes.dataValues.exerciseTitle,
+        //   exerciseId: parameterExerciseRes.dataValues.exerciseId,
+        //   parameters: JSON.parse(parameterExerciseRes.dataValues.parameters)
+        // })
+      }
+
+      // therapyDays.push({
+      //   id: therapyDayRes.dataValues.id,
+      //   createdAt: therapyDayRes.dataValues.createdAt,
+      //   updatedAt: therapyDayRes.dataValues.updatedAt,
+      //   date: therapyDayRes.dataValues.date,
+      //   parameters: parameterExercises
+      // })
+    }
+
+    const therapyDayResz = await this.store.therapyDay.findAll({
+      where: {
+        scheduleId: therpaySchduleRes.dataValues.id
+      }
+    })
+
+    const days = therapyDayResz.map(item => item.dataValues)
+    // console.log("day res ", therpaySchduleRes)
+
+    var resDays = []
+    for (let index = 0; index < days.length; index++) {
+      const day = days[index];
+      // console.log("day is ", day)
+      const paramPerExercise = await this.store.exerciseParameter.findAll({
+        where: {
+          therapyDayId: day.id
+        }
+      })
+
+      const transformedParams = paramPerExercise.map(val => val.dataValues).map(val => {
+        return {
+          id: val.id,
+          title: val.exerciseTitle,
+          exerciseId: val.exerciseId,
+          parameters: JSON.parse(val.parameters),
+          enabled: val.enabled
+        }
+      })
+      // console.log("param per ex", paramPerExercise)
+      // console.log("transformed", transformedParams)
+
+      resDays.push({
+        parameters: transformedParams,
+        date: day.date,
+        id: day.id,
+        createdAt: day.createdAt,
+        updatedAt: day.updatedAt,
+
+      })
+
+    }
+
+    return {
+      updatedAt: therpaySchduleRes.dataValues.updatedAt,
+
+      createdAt: therpaySchduleRes.dataValues.updatedAt,
+      id: therpaySchduleRes.dataValues.id,
+      startDate: therpaySchduleRes.dataValues.startDate,
+      endDate: therpaySchduleRes.dataValues.endDate,
+      exerciseIds: therpaySchduleRes.dataValues.exercises,
+      therapistId: therpaySchduleRes.dataValues.therapistId,
+      patientId: therpaySchduleRes.dataValues.patientId,
+      days: resDays
+
+    }
+
+  }
+
+
   async addSchedule(scheduleInput, patientId, therapistId) {
+
+    // console.log("schedule input is ", scheduleInput)
 
     const therpaySchduleRes = await this.store.therapySchedule.create({
       startDate: scheduleInput.startDate,
@@ -346,7 +482,6 @@ class UserAPI extends DataSource {
     })
 
     var therapyDays = []
-    console.log("schedule input is ", scheduleInput)
     var i = 0
     for (i = 0; i < scheduleInput.days.length; i++) {
       let day = scheduleInput.days[i]
@@ -371,7 +506,8 @@ class UserAPI extends DataSource {
           id: parameterExerciseRes.dataValues.id,
           title: parameterExerciseRes.dataValues.exerciseTitle,
           exerciseId: parameterExerciseRes.dataValues.exerciseId,
-          parameters: JSON.parse(parameterExerciseRes.dataValues.parameters)
+          parameters: JSON.parse(parameterExerciseRes.dataValues.parameters),
+          enabled: dayParam.enabled
         })
       }
 
