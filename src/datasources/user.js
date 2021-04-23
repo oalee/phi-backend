@@ -379,7 +379,7 @@ class UserAPI extends DataSource {
         var paramTemp
 
         if (!dayParam.id)
-          paramTemp = await this.store.exerciseParameter.insert({
+          paramTemp = await this.store.exerciseParameter.create({
             therapyDayId: therapyDayRes.dataValues.id,
             ...dayParam,
             parameters: JSON.stringify(dayParam.parameters)
