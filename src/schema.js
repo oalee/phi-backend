@@ -66,6 +66,7 @@ const typeDefs = gql`
     enabled: Boolean!
     name: String!
     title: String
+    value: Int
 
   }
 
@@ -143,6 +144,13 @@ const typeDefs = gql`
     createdAt: String!
     date: String!
     parameters: [ExerciseParameter]
+    assesments: [ExerciseAssesment]
+  }
+
+  type ExerciseAssesment{
+    assesments: Assesments
+    exerciseId: ID
+    id: ID
   }
 
   type ExerciseParameter{
@@ -210,7 +218,18 @@ const typeDefs = gql`
 
     updateTherapySchedule(updateInput: UpdateTherapyScheduleInput!, patientId: ID!): TherapySchedule
 
+    submitAssesment(submitAssesmentInput: SubmitAssesmentInput): TherapyDay
+
   }
+
+  input SubmitAssesmentInput{
+    dayId: ID!
+    exerciseId: ID!
+    id: ID
+    assesments: AssesmentsInput!
+
+  }
+
   input UpdateInput {
     id: ID!
     longDescription: String
@@ -281,7 +300,7 @@ const typeDefs = gql`
     enabled: Boolean!
     name: String!
     title: String
-
+    value: Int
 
   }
 

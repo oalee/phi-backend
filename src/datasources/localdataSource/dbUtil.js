@@ -291,6 +291,16 @@ module.exports.createStore = () => {
     enabled: Sequelize.BOOLEAN
   })
 
+  const exerciseAssesment = db.define("ExerciseAssesment", {
+    id: {
+      type: Sequelize.UUID,
+      primaryKey: true,
+    },
+    exerciseId: Sequelize.UUID,
+    therapyDayId: Sequelize.UUID,
+    assesments: Sequelize.TEXT
+  })
+
   const payload = db.define("Payloadz", {
     id: {
       type: Sequelize.UUID,
@@ -318,6 +328,7 @@ module.exports.createStore = () => {
   therapyDay.beforeCreate((obj) => (obj.id = uuid()));
   therapySchedule.beforeCreate((obj) => (obj.id = uuid()));
   exerciseParameter.beforeCreate((obj) => (obj.id = uuid()));
+  exerciseAssesment.beforeCreate((obj) => (obj.id = uuid()));
 
   users.sync();
   payload.sync();
@@ -331,7 +342,7 @@ module.exports.createStore = () => {
   therapyDay.sync()
   therapySchedule.sync()
   exerciseParameter.sync()
-
+  exerciseAssesment.sync()
 
   db.authenticate();
 
@@ -348,6 +359,7 @@ module.exports.createStore = () => {
     publicExercise,
     therapyDay,
     therapySchedule,
-    exerciseParameter
+    exerciseParameter,
+    exerciseAssesment
   };
 };

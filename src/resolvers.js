@@ -93,6 +93,13 @@ module.exports = {
 
   },
 
+  TherapySchedule: {
+    exercises: (root, args, context, info) => {
+      if (root.exerciseIds)
+        return context.dataSources.userAPI.getExercisesFromIDList(root.exerciseIds);
+    },
+  },
+
   Mutation: {
     addUser: async (_, args, context) => {
       console.log(args);
@@ -123,6 +130,15 @@ module.exports = {
     updateExercise: async (root, args, context, info) => {
       console.log("add exercise mutation", args)
       return context.dataSources.userAPI.updateExercise(args.updateInput)
+    },
+
+    submitAssesment: async (root, args, context, info) => {
+
+      if (context.user) {
+        return context.dataSources.userAPI.submitAssesment(args.submitAssesmentInput);
+      } else {
+        throw new AuthenticationError("API not available for you");
+      }
     }
   },
   // ,
