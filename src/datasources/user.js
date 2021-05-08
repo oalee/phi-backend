@@ -405,10 +405,14 @@ class UserAPI extends DataSource {
         console.log("exercise parameter is ", JSON.parse(val.parameters))
 
         return {
+          ...val,
           id: val.id,
           title: val.exerciseTitle,
           exerciseId: val.exerciseId,
+
           parameters: JSON.parse(val.parameters),
+          additionalInstructions: val.additionalInstructions,
+
           enabled: val.enabled
         }
       })
@@ -547,6 +551,7 @@ class UserAPI extends DataSource {
           title: val.exerciseTitle,
           exerciseId: val.exerciseId,
           parameters: JSON.parse(val.parameters),
+          additionalInstructions: val.additionalInstructions,
           enabled: val.enabled
         }
       })
@@ -621,6 +626,7 @@ class UserAPI extends DataSource {
           id: parameterExerciseRes.dataValues.id,
           title: parameterExerciseRes.dataValues.exerciseTitle,
           exerciseId: parameterExerciseRes.dataValues.exerciseId,
+          additionalInstructions: dayParam.additionalInstructions,
           parameters: dayParam.parameters,
           enabled: dayParam.enabled
         })
