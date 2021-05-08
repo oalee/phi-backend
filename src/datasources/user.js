@@ -470,8 +470,8 @@ class UserAPI extends DataSource {
         var j = 0;
         for (j = 0; j < day.parameters.length; j++) {
           let dayParam = day.parameters[j]
-          dayParam.title = dayParam.exerciseTitle
-          dayParam.exerciseTitle = undefined
+          // dayParam.title = dayParam.exerciseTitle
+          // dayParam.exerciseTitle = undefined
           var paramTemp
 
           if (!dayParam.id)
@@ -594,8 +594,7 @@ class UserAPI extends DataSource {
         const parameterExerciseRes = await this.store.exerciseParameter.create({
           therapyDayId: therapyDayRes.dataValues.id,
           exerciseId: dayParam.exerciseId,
-          exerciseTitle: dayParam.title,
-          enabled: dayParam.enabled,
+          ...dayParam,
           parameters: JSON.stringify(dayParam.parameters)
         })
         parameterExercises.push({

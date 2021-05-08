@@ -95,7 +95,11 @@ module.exports.createStore = () => {
     creatorId: Sequelize.TEXT, //TherapistId
     parameters: Sequelize.TEXT,
     assesments: Sequelize.TEXT,
-    parentId: Sequelize.TEXT
+    parentId: Sequelize.TEXT,
+
+    instructions: Sequelize.TEXT,
+    additionalInstructions: Sequelize.TEXT
+
   });
 
   const publicExercise = db.define("PublicExercise", {
@@ -132,6 +136,11 @@ module.exports.createStore = () => {
     parameters: Sequelize.TEXT,
     assesments: Sequelize.TEXT,
     parentId: Sequelize.TEXT
+
+    ,
+
+    instructions: Sequelize.TEXT,
+    additionalInstructions: Sequelize.TEXT
 
   });
   const files = db.define("FileRecords", {
@@ -192,45 +201,45 @@ module.exports.createStore = () => {
     name: Sequelize.STRING,
   });
 
-  const schedule = db.define("Schedule", {
-    id: {
-      type: Sequelize.UUID,
-      primaryKey: true,
-    },
-    createdAt: {
-      type: Sequelize.DATE,
-      defaultValue: Sequelize.NOW,
-    },
-    updatedAt: {
-      type: Sequelize.DATE,
-      defaultValue: Sequelize.NOW,
-    },
-    exerciseId: Sequelize.UUID,
-    patientId: Sequelize.UUID,
-    scheduleInfoId: Sequelize.UUID,
-  });
+  // const schedule = db.define("Schedule", {
+  //   id: {
+  //     type: Sequelize.UUID,
+  //     primaryKey: true,
+  //   },
+  //   createdAt: {
+  //     type: Sequelize.DATE,
+  //     defaultValue: Sequelize.NOW,
+  //   },
+  //   updatedAt: {
+  //     type: Sequelize.DATE,
+  //     defaultValue: Sequelize.NOW,
+  //   },
+  //   exerciseId: Sequelize.UUID,
+  //   patientId: Sequelize.UUID,
+  //   scheduleInfoId: Sequelize.UUID,
+  // });
 
-  const scheduleInfo = db.define("ScheduleInfo", {
-    id: {
-      type: Sequelize.UUID,
-      primaryKey: true,
-    },
-    createdAt: {
-      type: Sequelize.DATE,
-      defaultValue: Sequelize.NOW,
-    },
-    updatedAt: {
-      type: Sequelize.DATE,
-      defaultValue: Sequelize.NOW,
-    },
-    startDate: Sequelize.DATE,
-    endDate: Sequelize.DATE,
-    scheduleDays: Sequelize.ARRAY(Sequelize.DATE),
-    scheduleType: {
-      type: Sequelize.ENUM,
-      values: ["Daily", "TwoDays", "ThreeDays"],
-    },
-  });
+  // const scheduleInfo = db.define("ScheduleInfo", {
+  //   id: {
+  //     type: Sequelize.UUID,
+  //     primaryKey: true,
+  //   },
+  //   createdAt: {
+  //     type: Sequelize.DATE,
+  //     defaultValue: Sequelize.NOW,
+  //   },
+  //   updatedAt: {
+  //     type: Sequelize.DATE,
+  //     defaultValue: Sequelize.NOW,
+  //   },
+  //   startDate: Sequelize.DATE,
+  //   endDate: Sequelize.DATE,
+  //   scheduleDays: Sequelize.ARRAY(Sequelize.DATE),
+  //   scheduleType: {
+  //     type: Sequelize.ENUM,
+  //     values: ["Daily", "TwoDays", "ThreeDays"],
+  //   },
+  // });
 
 
   const therapySchedule = db.define("TherapySchedule", {
@@ -286,9 +295,10 @@ module.exports.createStore = () => {
     // },
     therapyDayId: Sequelize.UUID,
     exerciseId: Sequelize.UUID,
-    exerciseTitle: Sequelize.STRING,
+    // exerciseTitle: Sequelize.STRING,
     parameters: Sequelize.TEXT,
-    enabled: Sequelize.BOOLEAN
+    enabled: Sequelize.BOOLEAN,
+    additionalInstructions: Sequelize.TEXT
   })
 
   const exerciseAssesment = db.define("ExerciseAssesment", {
@@ -317,25 +327,41 @@ module.exports.createStore = () => {
     token: Sequelize.TEXT,
     userId: Sequelize.UUID,
   });
+
+  const evaluationResult = db.define("EvaluationResult", {
+    id: {
+      type: Sequelize.UUID,
+      primaryKey: true,
+    },
+
+    dayId: Sequelize.UUID,
+    exerciseId: Sequelize.UUID,
+    feedback: Sequelize.STRING,
+    parameters: Sequelize.TEXT,
+    assesments: Sequelize.TEXT
+
+  })
+
   users.beforeCreate((user) => (user.id = uuid()));
   payload.beforeCreate((payload) => (payload.id = uuid()));
   exercise.beforeCreate((obj) => (obj.id = uuid()));
   patientInfo.beforeCreate((obj) => (obj.id = uuid()));
-  schedule.beforeCreate((obj) => (obj.id = uuid()));
-  scheduleInfo.beforeCreate((obj) => (obj.id = uuid()));
+  // schedule.beforeCreate((obj) => (obj.id = uuid()));
+  // scheduleInfo.beforeCreate((obj) => (obj.id = uuid()));
   therapist.beforeCreate((obj) => (obj.id = uuid()));
   publicExercise.beforeCreate((obj) => (obj.id = uuid()));
   therapyDay.beforeCreate((obj) => (obj.id = uuid()));
   therapySchedule.beforeCreate((obj) => (obj.id = uuid()));
   exerciseParameter.beforeCreate((obj) => (obj.id = uuid()));
   exerciseAssesment.beforeCreate((obj) => (obj.id = uuid()));
+  evaluationResult.beforeCreate((obj) => (obj.id = uuid()));
 
   users.sync();
   payload.sync();
   exercise.sync();
   patientInfo.sync();
-  schedule.sync();
-  scheduleInfo.sync();
+  // schedule.sync();
+  // scheduleInfo.sync();
   therapist.sync();
   files.sync()
   publicExercise.sync()
@@ -343,6 +369,7 @@ module.exports.createStore = () => {
   therapySchedule.sync()
   exerciseParameter.sync()
   exerciseAssesment.sync()
+  evaluationResult.sync()
 
   db.authenticate();
 
@@ -353,8 +380,7 @@ module.exports.createStore = () => {
     exercise,
     patientInfo,
     therapist,
-    schedule,
-    scheduleInfo,
+    evaluationResult,
     files,
     publicExercise,
     therapyDay,

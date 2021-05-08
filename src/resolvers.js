@@ -132,14 +132,14 @@ module.exports = {
       return context.dataSources.userAPI.updateExercise(args.updateInput)
     },
 
-    submitAssesment: async (root, args, context, info) => {
+    // submitAssesment: async (root, args, context, info) => {
 
-      if (context.user) {
-        return context.dataSources.userAPI.submitAssesment(args.submitAssesmentInput);
-      } else {
-        throw new AuthenticationError("API not available for you");
-      }
-    }
+    //   if (context.user) {
+    //     return context.dataSources.userAPI.submitAssesment(args.submitAssesmentInput);
+    //   } else {
+    //     throw new AuthenticationError("API not available for you");
+    //   }
+    // }
   },
   // ,
   // Mutation: {

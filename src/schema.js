@@ -47,22 +47,27 @@ const typeDefs = gql`
     shortDescription: String!
     title: String!
     videos: [URLHolder]!
-    parameters: Parameters
-    assesments: Assesments
+    parameters: [Parameter]
+    assesments: [Assesment]
     type: ExerciseType
     parentId: String
     creatorId: String
+    additionalInstructions: String
+    instructions: String
   }
 
- 
-  type Assesments{
-    tiredness: Assesment
-    dificulty: Assesment
-    shortnessOfBreath: Assesment
-    pain: Assesment
+  """
+  // type Assesments{
+  //   tiredness: Assesment
+  //   dificulty: Assesment
+  //   shortnessOfBreath: Assesment
+  //   pain: Assesment
 
-  }
+  // }
+  """
+
   type Assesment{
+    id: ID!
     enabled: Boolean!
     name: String!
     title: String
@@ -70,17 +75,20 @@ const typeDefs = gql`
 
   }
 
-
-  type Parameters{
-    sets: Parameter
-    reps: Parameter
-    repPerDay: Parameter
-    hold: Parameter
-    restPerSet: Parameter
-    totalDuration: Parameter
-  }
+  """
+  // type Parameters{
+  //   sets: Parameter
+  //   reps: Parameter
+  //   repPerDay: Parameter
+  //   hold: Parameter
+  //   restPerSet: Parameter
+  //   totalDuration: Parameter
+  // }
+  """
 
   type Parameter{
+
+    id: ID!
     enabled: Boolean!
     name: String!
     value: Int
@@ -116,6 +124,15 @@ const typeDefs = gql`
     name: String!
   }
 
+  type EvaluationResult{
+    id: ID!
+    dayId: ID!
+    exerciseId: ID!
+    parameters: [Parameter]
+    feedback: String
+    assesments: [Assesment]
+  }
+
   type ScheduleInfo {
     createdAt: String!
     endDate: String!
@@ -144,21 +161,25 @@ const typeDefs = gql`
     createdAt: String!
     date: String!
     parameters: [ExerciseParameter]
-    assesments: [ExerciseAssesment]
+    evaluation: [EvaluationResult]
   }
 
-  type ExerciseAssesment{
-    assesments: Assesments
-    exerciseId: ID
-    id: ID
-  }
+  """
+  // type ExerciseAssesment{
+  //   assesments: Assesments
+  //   exerciseId: ID
+  //   id: ID
+  // }
+  """
 
   type ExerciseParameter{
-    parameters: Parameters
+
+    parameters: [Parameter]
     exerciseId: ID
-    title: String
     id: ID!
     enabled: Boolean
+    additionalInstructions: String
+
   }
 
   enum ScheduleType {
@@ -218,10 +239,11 @@ const typeDefs = gql`
 
     updateTherapySchedule(updateInput: UpdateTherapyScheduleInput!, patientId: ID!): TherapySchedule
 
-    submitAssesment(submitAssesmentInput: SubmitAssesmentInput): TherapyDay
+   
 
   }
 
+  """
   input SubmitAssesmentInput{
     dayId: ID!
     exerciseId: ID!
@@ -229,6 +251,7 @@ const typeDefs = gql`
     assesments: AssesmentsInput!
 
   }
+  """
 
   input UpdateInput {
     id: ID!
@@ -238,23 +261,28 @@ const typeDefs = gql`
     title: String
     type: ExerciseType
     videos: [URLHolderInput]
-    parameters: ParametersInput
-    assesments: AssesmentsInput
+    parameters: [ParameterInput]
+    assesments: [AssesmentInput]
     state: String
     updatedAt: String
+
+
   }
   input ExerciseInput {
+
     longDescription: String!
     pictures: [URLHolderInput]!
     shortDescription: String!
     title: String!
     type: ExerciseType
     videos: [URLHolderInput]!
-    parameters: ParametersInput
-    assesments: AssesmentsInput
+    parameters: [ParameterInput]
+    assesments: [AssesmentInput]
     state: String
     parentId: String
-    
+    additionalInstructions: String
+    instructions: String
+
   }
 
   input URLHolderInput{
@@ -270,14 +298,16 @@ const typeDefs = gql`
   input TherapistInput {
     name: String!
   }
-  input ParametersInput{
-    sets: ParameterInput
-    reps: ParameterInput
-    repPerDay: ParameterInput
-    hold: ParameterInput
-    restPerSet: ParameterInput
-    totalDuration: ParameterInput
-  }
+  """
+  // input ParametersInput{
+  //   sets: ParameterInput
+  //   reps: ParameterInput
+  //   repPerDay: ParameterInput
+  //   hold: ParameterInput
+  //   restPerSet: ParameterInput
+  //   totalDuration: ParameterInput
+  // }
+  """
 
   input ParameterInput{
     enabled: Boolean!
@@ -286,31 +316,37 @@ const typeDefs = gql`
     value: Int
     secondValue: Int
     valueType: ParameterType
+    id: ID
 
   }
 
-  input AssesmentsInput{
-    tiredness: AssesmentInput
-    dificulty: AssesmentInput
-    shortnessOfBreath: AssesmentInput
-    pain: AssesmentInput
+  """
+  // input AssesmentsInput{
+  //   tiredness: AssesmentInput
+  //   dificulty: AssesmentInput
+  //   shortnessOfBreath: AssesmentInput
+  //   pain: AssesmentInput
 
-  }
+  // }
+  """
+
   input AssesmentInput{
     enabled: Boolean!
     name: String!
     title: String
     value: Int
+    id: ID
 
   }
 
-
-  input ScheduleInfoInput {
-    endDate: String!
-    scheduleDays: [String]!
-    scheduleType: ScheduleType!
-    startDate: String!
-  }
+  """
+  // input ScheduleInfoInput {
+  //   endDate: String!
+  //   scheduleDays: [String]!
+  //   scheduleType: ScheduleType!
+  //   startDate: String!
+  // }
+  """
 
   input UserInput {
     password: String!
@@ -349,11 +385,12 @@ const typeDefs = gql`
   }
 
   input ExerciseParameterInput{
-    parameters: ParametersInput!
+    parameters: [ParameterInput]!
     exerciseId: ID!
-    title: String!
     enabled: Boolean!
     id: ID
+    additionalInstructions: String
+
   }
 
 `;
