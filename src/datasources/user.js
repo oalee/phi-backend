@@ -190,9 +190,15 @@ class UserAPI extends DataSource {
     }
 
     if (exercise.assesments) {
+
+      exercise.assesments.forEach(item => { if (item.id == undefined) item.id = uuidv4() })
+
       dbExercise.assesments = JSON.stringify(exercise.assesments)
+
     }
     if (exercise.parameters) {
+
+      exercise.parameters.forEach(item => { if (item.id == undefined) item.id = uuidv4() })
       dbExercise.parameters = JSON.stringify(exercise.parameters)
 
     }
@@ -273,6 +279,9 @@ class UserAPI extends DataSource {
 
     // exercise.videos = exercise.videos.map( (val) => val.id )
     // exercise.pictures = exercise.pictures.map( (val) => val.id )
+
+    exercise.parameters.forEach(item => item.id = uuidv4())
+    exercise.assesments.forEach(item => item.id = uuidv4())
 
     const dbExercise = await this.store.exercise.create({
       ...exercise,
@@ -377,21 +386,24 @@ class UserAPI extends DataSource {
         }
       })
 
-      const assesmentPerExercise = await this.store.exerciseAssesment.findAll({
-        where: {
-          therapyDayId: day.id
-        }
-      })
+      // const assesmentPerExercise = await this.store.exerciseAssesment.findAll({
+      //   where: {
+      //     therapyDayId: day.id
+      //   }
+      // })
 
-      const transformedAssesments = assesmentPerExercise.map(val => val.dataValues).map(val => {
-        return {
-          id: val.id,
-          exerciseId: val.exerciseId,
-          assesments: JSON.parse(val.assesments)
-        }
-      })
+      // const transformedAssesments = assesmentPerExercise.map(val => val.dataValues).map(val => {
+      //   return {
+      //     id: val.id,
+      //     exerciseId: val.exerciseId,
+      //     assesments: JSON.parse(val.assesments)
+      //   }
+      // })
 
       const transformedParams = paramPerExercise.map(val => val.dataValues).map(val => {
+
+        console.log("exercise parameter is ", JSON.parse(val.parameters))
+
         return {
           id: val.id,
           title: val.exerciseTitle,
@@ -405,7 +417,7 @@ class UserAPI extends DataSource {
 
       resDays.push({
         parameters: transformedParams,
-        assesments: transformedAssesments,
+        // assesments: transformedAssesments,
         date: day.date,
         id: day.id,
         createdAt: day.createdAt,
@@ -472,6 +484,10 @@ class UserAPI extends DataSource {
           let dayParam = day.parameters[j]
           // dayParam.title = dayParam.exerciseTitle
           // dayParam.exerciseTitle = undefined
+
+          dayParam.parameters.forEach(item => { if (item.id == undefined) item.id = uuidv4() })
+
+
           var paramTemp
 
           if (!dayParam.id)
@@ -567,7 +583,7 @@ class UserAPI extends DataSource {
 
   async addSchedule(scheduleInput, patientId, therapistId) {
 
-    // console.log("schedule input is ", scheduleInput)
+    console.log("schedule input is ", scheduleInput)
 
     const therpaySchduleRes = await this.store.therapySchedule.create({
       startDate: scheduleInput.startDate,
@@ -591,6 +607,10 @@ class UserAPI extends DataSource {
       var j = 0;
       for (j = 0; j < day.parameters.length; j++) {
         let dayParam = day.parameters[j]
+        console.log("dayParam ", dayParam)
+
+        dayParam.parameters.forEach(item => item.id = uuidv4())
+        console.log("dayParam ", dayParam)
         const parameterExerciseRes = await this.store.exerciseParameter.create({
           therapyDayId: therapyDayRes.dataValues.id,
           exerciseId: dayParam.exerciseId,
@@ -601,7 +621,7 @@ class UserAPI extends DataSource {
           id: parameterExerciseRes.dataValues.id,
           title: parameterExerciseRes.dataValues.exerciseTitle,
           exerciseId: parameterExerciseRes.dataValues.exerciseId,
-          parameters: JSON.parse(parameterExerciseRes.dataValues.parameters),
+          parameters: dayParam.parameters,
           enabled: dayParam.enabled
         })
       }
