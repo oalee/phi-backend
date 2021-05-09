@@ -297,18 +297,21 @@ class UserAPI extends DataSource {
 
   }
 
-  async submitAssessment(submitAssesmentInput) {
+  async submitEvaluation(submitEvaluationInput) {
 
 
-    const res = await this.store.exerciseAssesment.upsert({
-      ...submitAssesmentInput,
-      therapyDayId: submitAssesmentInput.dayId,
-      assesments: JSON.stringify(submitAssesmentInput.assesments),
+    submitEvaluationInput.parameters.forEach(item => item.id = uuidv4())
+    submitEvaluationInput.assesments.forEach(item => item.id = uuidv4())
+
+    const res = await this.store.evaluationResult.create({
+      ...submitEvaluationInput,
+      assesments: JSON.stringify(submitEvaluationInput.assesments),
+      parameters: JSON.stringify(submitEvaluationInput.parameters)
 
     })
 
-    const day = await this.store.therapyDay.find({
-      where: { id: submitAssesmentInput.dayId }
+    const day = await this.store.therapyDay.findOne({
+      where: { id: submitEvaluationInput.dayId }
     })
 
     const paramPerExercise = await this.store.exerciseParameter.findAll({
@@ -317,25 +320,23 @@ class UserAPI extends DataSource {
       }
     })
 
-    const assesmentPerExercise = await this.store.exerciseAssesment.findAll({
+    const evaluationResults = await this.store.evaluationResult.findAll({
       where: {
-        therapyDayId: day.dataValues.id
+        dayId: day.dataValues.id
       }
     })
 
-    const transformedAssesments = assesmentPerExercise.map(val => val.dataValues).map(val => {
+    const transformedEvals = evaluationResults.map(val => val.dataValues).map(val => {
       return {
-        id: val.id,
-        exerciseId: val.exerciseId,
-        assesments: JSON.parse(val.assesments)
+        ...val,
+        assesments: JSON.parse(val.assesments),
+        parameters: JSON.parse(val.parameters)
       }
     })
 
     const transformedParams = paramPerExercise.map(val => val.dataValues).map(val => {
       return {
-        id: val.id,
-        title: val.exerciseTitle,
-        exerciseId: val.exerciseId,
+        ...val,
         parameters: JSON.parse(val.parameters),
         enabled: val.enabled
       }
@@ -343,7 +344,7 @@ class UserAPI extends DataSource {
 
     return {
       parameters: transformedParams,
-      assesments: transformedAssesments,
+      evaluation: transformedEvals,
       date: day.dataValues.date,
       id: day.dataValues.id,
       createdAt: day.dataValues.createdAt,
@@ -379,30 +380,33 @@ class UserAPI extends DataSource {
     var resDays = []
     for (let index = 0; index < days.length; index++) {
       const day = days[index];
-      // console.log("day is ", day)
+      console.log("day is ", day)
       const paramPerExercise = await this.store.exerciseParameter.findAll({
         where: {
           therapyDayId: day.id
         }
       })
 
-      // const assesmentPerExercise = await this.store.exerciseAssesment.findAll({
-      //   where: {
-      //     therapyDayId: day.id
-      //   }
-      // })
+      const evaluationResults = await this.store.evaluationResult.findAll({
+        where: {
+          dayId: day.id
+        }
+      })
 
-      // const transformedAssesments = assesmentPerExercise.map(val => val.dataValues).map(val => {
-      //   return {
-      //     id: val.id,
-      //     exerciseId: val.exerciseId,
-      //     assesments: JSON.parse(val.assesments)
-      //   }
-      // })
+
+      console.log("res ", evaluationResults)
+
+      const transformedEvals = evaluationResults.map(val => val.dataValues).map(val => {
+        return {
+          ...val,
+          assesments: JSON.parse(val.assesments),
+          parameters: JSON.parse(val.parameters)
+        }
+      })
 
       const transformedParams = paramPerExercise.map(val => val.dataValues).map(val => {
 
-        console.log("exercise parameter is ", JSON.parse(val.parameters))
+        // console.log("exercise parameter is ", JSON.parse(val.parameters))
 
         return {
           ...val,
@@ -421,7 +425,7 @@ class UserAPI extends DataSource {
 
       resDays.push({
         parameters: transformedParams,
-        // assesments: transformedAssesments,
+        evaluation: transformedEvals,
         date: day.date,
         id: day.id,
         createdAt: day.createdAt,
@@ -430,7 +434,7 @@ class UserAPI extends DataSource {
       })
 
     }
-    // console.log("final day res ", resDays)
+    console.log("final day res ", resDays)
 
     return {
       updatedAt: therpaySchduleRes.dataValues.updatedAt,
@@ -555,11 +559,24 @@ class UserAPI extends DataSource {
           enabled: val.enabled
         }
       })
-      // console.log("param per ex", paramPerExercise)
-      // console.log("transformed", transformedParams)
+
+      const evaluationResults = await this.store.evaluationResult.findAll({
+        where: {
+          dayId: day.id
+        }
+      })
+
+      const transformedEvals = evaluationResults.map(val => val.dataValues).map(val => {
+        return {
+          ...val,
+          assesments: JSON.parse(val.assesments),
+          parameters: JSON.parse(val.parameters)
+        }
+      })
 
       resDays.push({
         parameters: transformedParams,
+        evaluation: transformedEvals,
         date: day.date,
         id: day.id,
         createdAt: day.createdAt,

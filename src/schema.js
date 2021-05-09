@@ -126,11 +126,10 @@ const typeDefs = gql`
 
   type EvaluationResult{
     id: ID!
-    dayId: ID!
     exerciseId: ID!
-    parameters: [Parameter]
+    parameters: [Parameter]!
     feedback: String
-    assesments: [Assesment]
+    assesments: [Assesment]!
   }
 
   type ScheduleInfo {
@@ -239,19 +238,18 @@ const typeDefs = gql`
 
     updateTherapySchedule(updateInput: UpdateTherapyScheduleInput!, patientId: ID!): TherapySchedule
 
-   
+    submitEvaluation(evaluationInput: EvaluationInput): TherapyDay
 
   }
 
-  """
-  input SubmitAssesmentInput{
+  input EvaluationInput{
     dayId: ID!
     exerciseId: ID!
-    id: ID
-    assesments: AssesmentsInput!
-
+    parameters: [ParameterInput]!
+    feedback: String
+    assesments: [AssesmentInput]!
   }
-  """
+
 
   input UpdateInput {
     id: ID!
