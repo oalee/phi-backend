@@ -342,6 +342,47 @@ module.exports.createStore = () => {
 
   })
 
+  const questainare = db.define("Questainare", {
+    id: {
+      type: Sequelize.UUID,
+      primaryKey: true,
+    },
+    creatorId: Sequelize.UUID, //TherapistId
+    title: Sequelize.TEXT
+  })
+
+  const questions = db.define("Questions", {
+    id: {
+      type: Sequelize.UUID,
+      primaryKey: true,
+    },
+    questainareId: Sequelize.UUID,
+    order: Sequelize.INTEGER,
+    question: Sequelize.TEXT,
+    answerType: {
+      type: Sequelize.ENUM,
+      values: ["TEXT", "OPTIONS"],
+    },
+    options: Sequelize.TEXT
+  })
+
+  const questionOption = db.define("QuestionOptions", {
+    id: {
+      type: Sequelize.UUID,
+      primaryKey: true,
+    },
+    questionId: Sequelize.UUID,
+    order: Sequelize.INTEGER,
+    value: Sequelize.TEXT
+
+  })
+
+
+  questainare.beforeCreate((user) => (user.id = uuid()));
+  questions.beforeCreate((user) => (user.id = uuid()));
+  questionOption.beforeCreate((user) => (user.id = uuid()));
+
+
   users.beforeCreate((user) => (user.id = uuid()));
   payload.beforeCreate((payload) => (payload.id = uuid()));
   exercise.beforeCreate((obj) => (obj.id = uuid()));
@@ -355,6 +396,12 @@ module.exports.createStore = () => {
   exerciseParameter.beforeCreate((obj) => (obj.id = uuid()));
   exerciseAssesment.beforeCreate((obj) => (obj.id = uuid()));
   evaluationResult.beforeCreate((obj) => (obj.id = uuid()));
+
+
+  questainare.sync();
+  questions.sync();
+  questionOption.sync();
+
 
   users.sync();
   payload.sync();
@@ -386,6 +433,9 @@ module.exports.createStore = () => {
     therapyDay,
     therapySchedule,
     exerciseParameter,
-    exerciseAssesment
+    exerciseAssesment,
+    questainare,
+    questions,
+    questionOption
   };
 };

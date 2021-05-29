@@ -684,6 +684,92 @@ class UserAPI extends DataSource {
 
   }
 
+
+  async getMyQuestionares(currentUser) {
+
+    var questainare = await this.store.questainare.findAll({
+      where: { creatorId: currentUser.therapistId }
+    })
+
+    if (questainare.length == 0)
+      return []
+
+    questainare = questainare.map(item => item.dataValues)
+
+
+    for (let i = 0; i < questainare.length; i++) {
+      const q = questainare[i];
+      const tempRes = await this.store.questions.findAll({
+        where: { questainareId: q.id }
+      })
+      const res = tempRes.map(item => { return { ...item.dataValues, options: JSON.parse(item.dataValues.options) } })
+
+      questainare[i].questions = res
+    }
+
+    return questainare
+
+
+  }
+
+  async addQuestionare(currentUser, questionareInput) {
+
+    const questionareRes = await this.store.questainare.create({
+      creatorId: currentUser.therapistId,
+      title: questionareInput.title
+    })
+
+    var questionRes = []
+
+    for (let i = 0; i < questionareInput.questions.length; i++) {
+
+      //   questainareId: Sequelize.UUID,
+      // order: Sequelize.INTEGER,
+      // question: Sequelize.TEXT,
+      // answerType: {
+      //   type: Sequelize.ENUM,
+      //   values: ["TEXT", "OPTIONS"],
+      // },
+
+      // order: Int!
+      // question: String!
+      // answerType: QuestionAnswerType!
+      // options: [QuestionOptionInput]
+
+
+      const question = questionareInput.questions[i];
+
+      if (question.options != null)
+        question.options.forEach(item => item.id = uuidv4())
+
+      let res = await this.store.questions.create({
+        questainareId: questionareRes.dataValues.id,
+        order: question.order,
+        question: question.question,
+        answerType: question.answerType,
+        options: JSON.stringify(question.options)
+
+      })
+
+      questionRes.push({ ...res.dataValues, options: question.options })
+
+    }
+
+
+    console.log("returning after add ", {
+      ...questionareRes.dataValues,
+      questions: questionRes
+    }
+    )
+
+    return {
+      ...questionareRes.dataValues,
+      questions: questionRes
+    }
+
+  }
+
+
   async getMyPatients(currentUser) {
 
     const patients = await this.store.patientInfo.findAll({ where: { therapistId: currentUser.therapistId } })

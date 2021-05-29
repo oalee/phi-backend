@@ -34,6 +34,41 @@ const typeDefs = gql`
     myPatients: [User]
 
     getSchedule(patientId: ID!): TherapySchedule
+
+    getMyQuestionares: [Questainare]
+  }
+
+  type Questainare{
+    createdAt: String
+    updatedAt: String
+    creatorId: String
+    creator: Therapist
+    id: ID!
+    title: String   
+    questions: [Question]
+
+  }
+
+  type Question{
+    order: Int!
+    id: ID!
+    question: String!
+    answerType: QuestionAnswerType!
+    options: [QuestionOption]
+    answeredOptionId: ID
+    answerStr: String
+
+  }
+
+  type QuestionOption{
+    order: Int
+    id: ID!
+    value: String
+  }
+
+  enum QuestionAnswerType{
+    OPTIONS,
+    TEXT
   }
 
   type Exercise {
@@ -56,15 +91,6 @@ const typeDefs = gql`
     instructions: String
   }
 
-  """
-  // type Assesments{
-  //   tiredness: Assesment
-  //   dificulty: Assesment
-  //   shortnessOfBreath: Assesment
-  //   pain: Assesment
-
-  // }
-  """
 
   type Assesment{
     id: ID!
@@ -75,16 +101,6 @@ const typeDefs = gql`
 
   }
 
-  """
-  // type Parameters{
-  //   sets: Parameter
-  //   reps: Parameter
-  //   repPerDay: Parameter
-  //   hold: Parameter
-  //   restPerSet: Parameter
-  //   totalDuration: Parameter
-  // }
-  """
 
   type Parameter{
 
@@ -161,6 +177,7 @@ const typeDefs = gql`
     date: String!
     parameters: [ExerciseParameter]
     evaluation: [EvaluationResult]
+    questionare: Questainare
   }
 
   """
@@ -240,6 +257,8 @@ const typeDefs = gql`
 
     submitEvaluation(evaluationInput: EvaluationInput): TherapyDay
 
+    addQuestainare(questainareInput: QuestainareInput): Questainare
+
   }
 
   input EvaluationInput{
@@ -296,16 +315,7 @@ const typeDefs = gql`
   input TherapistInput {
     name: String!
   }
-  """
-  // input ParametersInput{
-  //   sets: ParameterInput
-  //   reps: ParameterInput
-  //   repPerDay: ParameterInput
-  //   hold: ParameterInput
-  //   restPerSet: ParameterInput
-  //   totalDuration: ParameterInput
-  // }
-  """
+
 
   input ParameterInput{
     enabled: Boolean!
@@ -318,15 +328,6 @@ const typeDefs = gql`
 
   }
 
-  """
-  // input AssesmentsInput{
-  //   tiredness: AssesmentInput
-  //   dificulty: AssesmentInput
-  //   shortnessOfBreath: AssesmentInput
-  //   pain: AssesmentInput
-
-  // }
-  """
 
   input AssesmentInput{
     enabled: Boolean!
@@ -337,14 +338,6 @@ const typeDefs = gql`
 
   }
 
-  """
-  // input ScheduleInfoInput {
-  //   endDate: String!
-  //   scheduleDays: [String]!
-  //   scheduleType: ScheduleType!
-  //   startDate: String!
-  // }
-  """
 
   input UserInput {
     password: String!
@@ -390,6 +383,28 @@ const typeDefs = gql`
     additionalInstructions: String
 
   }
+
+
+
+  input QuestainareInput{
+    title: String   
+    questions: [QuestionInput]
+
+  }
+
+  input QuestionInput{
+    order: Int!
+    question: String!
+    answerType: QuestionAnswerType!
+    options: [QuestionOptionInput]
+  
+  }
+
+  input QuestionOptionInput{
+    order: Int
+    value: String
+  }
+
 
 `;
 

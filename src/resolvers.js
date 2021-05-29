@@ -72,6 +72,15 @@ module.exports = {
     // verifyToken: async (_, { token }, { dataSources }) => {
     //   return dataSources.userAPI.getUserForAccessToken(token);
     // },
+
+    getMyQuestionares: async (root, args, context, info) => {
+      console.log(context);
+      if (context.user == null) {
+        throw new AuthenticationError("API only available to logged in users");
+      } else if (context.user != null)
+
+        return context.dataSources.userAPI.getMyQuestionares(context.user)
+    },
   },
 
   User: {
@@ -139,7 +148,16 @@ module.exports = {
       } else {
         throw new AuthenticationError("API not available for you");
       }
-    }
+    },
+
+    addQuestainare: async (root, args, context, info) => {
+
+      if (context.user) {
+        return context.dataSources.userAPI.addQuestionare(context.user, args.questainareInput);
+      } else {
+        throw new AuthenticationError("API not available for you");
+      }
+    },
   },
   // ,
   // Mutation: {
