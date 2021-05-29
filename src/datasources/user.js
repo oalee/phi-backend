@@ -424,12 +424,13 @@ class UserAPI extends DataSource {
       // console.log("transformed", transformedParams)
 
       resDays.push({
+        ...day,
         parameters: transformedParams,
         evaluation: transformedEvals,
-        date: day.date,
-        id: day.id,
-        createdAt: day.createdAt,
-        updatedAt: day.updatedAt,
+        // date: day.date,
+        // id: day.id,
+        // createdAt: day.createdAt,
+        // updatedAt: day.updatedAt,
 
       })
 
@@ -466,7 +467,7 @@ class UserAPI extends DataSource {
       for (i = 0; i < scheduleInput.days.length; i++) {
         let day = scheduleInput.days[i]
         console.log("for day", day)
-        var dbDay = { date: day.date }
+        var dbDay = { date: day.date, questionareIds: day.questionareIds }
 
         var tempDayRes
         var therapyDayRes
@@ -577,10 +578,7 @@ class UserAPI extends DataSource {
       resDays.push({
         parameters: transformedParams,
         evaluation: transformedEvals,
-        date: day.date,
-        id: day.id,
-        createdAt: day.createdAt,
-        updatedAt: day.updatedAt,
+        ...day
 
       })
 
@@ -621,7 +619,7 @@ class UserAPI extends DataSource {
       let day = scheduleInput.days[i]
       console.log("day is ", day)
       const therapyDayRes = await this.store.therapyDay.create({
-        date: day.date,
+        ...day,
         scheduleId: therpaySchduleRes.dataValues.id
       })
       console.log("therapy day values are ", therapyDayRes.dataValues)
@@ -650,10 +648,7 @@ class UserAPI extends DataSource {
       }
 
       therapyDays.push({
-        id: therapyDayRes.dataValues.id,
-        createdAt: therapyDayRes.dataValues.createdAt,
-        updatedAt: therapyDayRes.dataValues.updatedAt,
-        date: therapyDayRes.dataValues.date,
+        ...therapyDayRes.dataValues,
         parameters: parameterExercises
       })
 

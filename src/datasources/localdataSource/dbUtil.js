@@ -277,6 +277,7 @@ module.exports.createStore = () => {
     // },
     date: Sequelize.STRING,
     scheduleId: Sequelize.UUID,
+    questionareIds: Sequelize.ARRAY(Sequelize.UUID),
 
   })
 
@@ -366,6 +367,16 @@ module.exports.createStore = () => {
     options: Sequelize.TEXT
   })
 
+  const questionAnswers = db.define("QuestionAnswer", {
+    id: {
+      type: Sequelize.UUID,
+      primaryKey: true,
+    },
+    questainareId: Sequelize.UUID,
+    dayId: Sequelize.UUID,
+    answers: Sequelize.TEXT
+  })
+
   const questionOption = db.define("QuestionOptions", {
     id: {
       type: Sequelize.UUID,
@@ -377,6 +388,7 @@ module.exports.createStore = () => {
 
   })
 
+  questionAnswers.beforeCreate((user) => (user.id = uuid()));
 
   questainare.beforeCreate((user) => (user.id = uuid()));
   questions.beforeCreate((user) => (user.id = uuid()));
@@ -397,7 +409,7 @@ module.exports.createStore = () => {
   exerciseAssesment.beforeCreate((obj) => (obj.id = uuid()));
   evaluationResult.beforeCreate((obj) => (obj.id = uuid()));
 
-
+  questionAnswers.sync()
   questainare.sync();
   questions.sync();
   questionOption.sync();

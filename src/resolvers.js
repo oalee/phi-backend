@@ -94,6 +94,14 @@ module.exports = {
     },
   },
 
+  Therapist: {
+
+    questionares: (root, args, context, info) => {
+      if (context.user != null)
+        return context.dataSources.userAPI.getMyQuestionares(context.user);
+    },
+  },
+
   PatientInfo: {
     schedule: (root, args, context, info) => {
       if (root.id)
@@ -108,6 +116,22 @@ module.exports = {
         return context.dataSources.userAPI.getExercisesFromIDList(root.exerciseIds);
     },
   },
+
+  TherapyDay: {
+    questionares: (root, args, context, info) => {
+      // if (root.exerciseIds)
+      //   return context.dataSources.userAPI.getExercisesFromIDList(root.exerciseIds);
+
+      // TODO if there is args, or context of patient, 
+    },
+  },
+  Questainare: {
+    answers: (root, args, context, info) => {
+
+      //todo, if there is args or patient ID in root, get answers for this questionnare and day
+    }
+  }
+  ,
 
   Mutation: {
     addUser: async (_, args, context) => {

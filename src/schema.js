@@ -46,6 +46,16 @@ const typeDefs = gql`
     id: ID!
     title: String   
     questions: [Question]
+    answers: [Answer]
+    answered: Boolean
+
+  }
+
+  type Answer{
+    id: ID!
+    questionId: ID!
+    answeredOptionId: ID
+    answerStr: String
 
   }
 
@@ -55,8 +65,6 @@ const typeDefs = gql`
     question: String!
     answerType: QuestionAnswerType!
     options: [QuestionOption]
-    answeredOptionId: ID
-    answerStr: String
 
   }
 
@@ -138,6 +146,7 @@ const typeDefs = gql`
     excersices: [Exercise]!
     id: ID!
     name: String!
+    questionares: [Questainare]
   }
 
   type EvaluationResult{
@@ -177,7 +186,9 @@ const typeDefs = gql`
     date: String!
     parameters: [ExerciseParameter]
     evaluation: [EvaluationResult]
-    questionare: Questainare
+    questionares: [Questainare]
+    questionareIds: [ID]
+
   }
 
   """
@@ -258,6 +269,8 @@ const typeDefs = gql`
     submitEvaluation(evaluationInput: EvaluationInput): TherapyDay
 
     addQuestainare(questainareInput: QuestainareInput): Questainare
+
+    submitQuestionare(questionareAnswerInput :QuestionareAnswerInput): Questainare
 
   }
 
@@ -373,6 +386,7 @@ const typeDefs = gql`
     id: ID
     date: String!
     parameters: [ExerciseParameterInput]!
+    questionareIds: [ID]
   }
 
   input ExerciseParameterInput{
@@ -403,6 +417,22 @@ const typeDefs = gql`
   input QuestionOptionInput{
     order: Int
     value: String
+  }
+
+
+  input QuestionAnswerInput{
+
+    id: ID!
+    questionId: ID!
+    answeredOptionId: ID
+    answerStr: String
+
+  }
+
+  input QuestionareAnswerInput{
+    questionareId: ID!
+    dayId: ID!
+    answers: [QuestionAnswerInput]
   }
 
 
