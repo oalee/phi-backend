@@ -25,7 +25,9 @@ const sizeOf = require('image-size')
 const ffmpeg = require('fluent-ffmpeg');
 require('dotenv').config();
 
-let whitelist = ['http://localhost:5000', 'http://localhost:3000']
+let whitelist = ['http://localhost:5000', 'http://localhost:3000', 'http://195.211.44.105:5000', 'http://195.211.44.105:3000']
+
+let fileBaseUrl = 'http://195.211.44.105:5000/'
 
 app.use(cors({
   origin: function (origin, callback) {
@@ -147,7 +149,7 @@ function proccesVideo(file) {
 
   return {
     // ...sizeOf(fullPAth),
-    placeHolder: "http://localhost:5000/" + fullPAth.slice(8)
+    placeHolder: fileBaseUrl + fullPAth.slice(8)
   }
 }
 
@@ -162,7 +164,7 @@ function uploadFiles(req, res) {
 
   if (req.body.type === "image")
     res.json({
-      ...sizeOf(req.file.path), url: "http://localhost:5000/" + req.file.path.slice(8), id: req.body.id,
+      ...sizeOf(req.file.path), url: fileBaseUrl + req.file.path.slice(8), id: req.body.id,
       type: req.file.mimetype, size: req.file.size
     });
   else {
@@ -175,7 +177,7 @@ function uploadFiles(req, res) {
         size: req.file.size,
         width: metadata.streams[0].width,
         height: metadata.streams[0].height,
-        url: "http://localhost:5000/" + req.file.path.slice(8), id: req.body.id, type: req.file.mimetype
+        url: fileBaseUrl + req.file.path.slice(8), id: req.body.id, type: req.file.mimetype
       });
     })
 
