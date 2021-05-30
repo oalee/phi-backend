@@ -169,11 +169,11 @@ function uploadFiles(req, res) {
     });
   else {
 
-    const fileValues = proccesVideo(req.file)
+    // const fileValues = proccesVideo(req.file)
     ffmpeg.ffprobe(req.file.path, (err, metadata) => {
       // console.log(metadata);
       res.json({
-        ...fileValues,
+        // ...fileValues,
         size: req.file.size,
         width: metadata.streams[0].width,
         height: metadata.streams[0].height,
