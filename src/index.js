@@ -169,17 +169,19 @@ function uploadFiles(req, res) {
     });
   else {
 
+
+    res.json({
+      // ...fileValues,
+      size: req.file.size,
+      width: 0,
+      height: 0,
+      url: fileBaseUrl + req.file.path.slice(8), id: req.body.id, type: req.file.mimetype
+    });
     // const fileValues = proccesVideo(req.file)
-    ffmpeg.ffprobe(req.file.path, (err, metadata) => {
-      // console.log(metadata);
-      res.json({
-        // ...fileValues,
-        size: req.file.size,
-        width: metadata.streams[0].width,
-        height: metadata.streams[0].height,
-        url: fileBaseUrl + req.file.path.slice(8), id: req.body.id, type: req.file.mimetype
-      });
-    })
+    // ffmpeg.ffprobe(req.file.path, (err, metadata) => {
+    //   // console.log(metadata);
+
+    // })
 
     // console.log("file is", fileValues)
 
