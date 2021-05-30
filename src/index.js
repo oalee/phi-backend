@@ -181,7 +181,7 @@ function uploadFiles(req, res) {
       });
     })
 
-    console.log("file is", fileValues)
+    // console.log("file is", fileValues)
 
 
   }
