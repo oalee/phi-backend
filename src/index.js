@@ -25,7 +25,7 @@ const sizeOf = require('image-size')
 const ffmpeg = require('fluent-ffmpeg');
 require('dotenv').config();
 
-let whitelist = ['http://localhost:5000', 'http://localhost:3000', 'http://195.211.44.105:5000', 'http://195.211.44.105:3000']
+let whitelist = ['http://localhost:5000', 'http://localhost:3000', 'http://195.211.44.105:5000', 'http://195.211.44.105:3000', 'http://195.211.44.105']
 
 let fileBaseUrl = 'http://195.211.44.105:5000/'
 
