@@ -139,8 +139,6 @@ module.exports = {
       if (context.user) {
         return context.dataSources.userAPI.createUser(args.userInput, context.user);
       } else {
-        return context.dataSources.userAPI.createUser(args.userInput, context.user);
-
         throw new AuthenticationError("API not available for you");
       }
     },
