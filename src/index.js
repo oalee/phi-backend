@@ -23,6 +23,7 @@ const fs = require('fs')
 const app = express();
 const sizeOf = require('image-size')
 const ffmpeg = require('fluent-ffmpeg');
+require('dotenv').config();
 
 let whitelist = ['http://localhost:5000', 'http://localhost:3000']
 

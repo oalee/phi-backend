@@ -1,5 +1,6 @@
 const { Sequelize } = require("sequelize");
 const uuid = require("uuid/v4");
+require('dotenv').config();
 
 module.exports.paginateResults = ({
   after: cursor,
@@ -31,7 +32,7 @@ module.exports.paginateResults = ({
 
 module.exports.createStore = () => {
   const db = new Sequelize(
-    "postgres://postgres:postgres@localhost:5432/postgres"
+    `${process.env.dbPath}`
   );
 
   const users = db.define("User", {
