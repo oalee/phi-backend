@@ -146,6 +146,7 @@ const typeDefs = gql`
     excersices: [Exercise]!
     id: ID!
     name: String!
+    phoneNumber: String
     questionares: [Questainare]
   }
 
@@ -327,6 +328,7 @@ const typeDefs = gql`
   }
   input TherapistInput {
     name: String!
+    phoneNumber: String
   }
 
 
@@ -385,7 +387,7 @@ const typeDefs = gql`
   input TherapyDayInput{
     id: ID
     date: String!
-    parameters: [ExerciseParameterInput]!
+    parameters: [ExerciseParameterInput]
     questionareIds: [ID]
   }
 

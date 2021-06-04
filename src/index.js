@@ -162,11 +162,15 @@ function uploadFiles(req, res) {
 
   // console.log(sizeOf(req.file.path))
 
-  if (req.body.type === "image")
+
+  if (req.body.type === "image") {
+    const { width, height } = sizeOf(req.file.path)
+
     res.json({
-      ...sizeOf(req.file.path), url: fileBaseUrl + req.file.path.slice(8), id: req.body.id,
+      width, height, url: fileBaseUrl + req.file.path.slice(8), id: req.body.id,
       type: req.file.mimetype, size: req.file.size
     });
+  }
   else {
 
 

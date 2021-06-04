@@ -489,38 +489,38 @@ class UserAPI extends DataSource {
 
         var parameterExercises = []
         var j = 0;
-        for (j = 0; j < day.parameters.length; j++) {
-          let dayParam = day.parameters[j]
-          // dayParam.title = dayParam.exerciseTitle
-          // dayParam.exerciseTitle = undefined
+        if (day.parameters)
+          for (j = 0; j < day.parameters.length; j++) {
+            let dayParam = day.parameters[j]
+            // dayParam.title = dayParam.exerciseTitle
+            // dayParam.exerciseTitle = undefined
 
-          dayParam.parameters.forEach(item => { if (item.id == undefined) item.id = uuidv4() })
+            dayParam.parameters.forEach(item => { if (item.id == undefined) item.id = uuidv4() })
 
 
-          var paramTemp
+            var paramTemp
 
-          if (!dayParam.id)
-            paramTemp = await this.store.exerciseParameter.create({
-              therapyDayId: therapyDayRes.dataValues.id,
-              ...dayParam,
-              parameters: JSON.stringify(dayParam.parameters)
-            }, { returning: true, plain: true })
-          else {
-            paramTemp = await this.store.exerciseParameter.update({
-              therapyDayId: therapyDayRes.dataValues.id,
-              ...dayParam,
-              parameters: JSON.stringify(dayParam.parameters)
-            }, { where: { id: dayParam.id }, returning: true, plain: true })
+            if (!dayParam.id)
+              paramTemp = await this.store.exerciseParameter.create({
+                therapyDayId: therapyDayRes.dataValues.id,
+                ...dayParam,
+                parameters: JSON.stringify(dayParam.parameters)
+              }, { returning: true, plain: true })
+            else {
+              paramTemp = await this.store.exerciseParameter.update({
+                therapyDayId: therapyDayRes.dataValues.id,
+                ...dayParam,
+                parameters: JSON.stringify(dayParam.parameters)
+              }, { where: { id: dayParam.id }, returning: true, plain: true })
+            }
+
+            // parameterExercises.push({
+            //   id: parameterExerciseRes.dataValues.id,
+            //   title: parameterExerciseRes.dataValues.exerciseTitle,
+            //   exerciseId: parameterExerciseRes.dataValues.exerciseId,
+            //   parameters: JSON.parse(parameterExerciseRes.dataValues.parameters)
+            // })
           }
-
-          const parameterExerciseRes = paramTemp[0]
-          // parameterExercises.push({
-          //   id: parameterExerciseRes.dataValues.id,
-          //   title: parameterExerciseRes.dataValues.exerciseTitle,
-          //   exerciseId: parameterExerciseRes.dataValues.exerciseId,
-          //   parameters: JSON.parse(parameterExerciseRes.dataValues.parameters)
-          // })
-        }
 
         // therapyDays.push({
         //   id: therapyDayRes.dataValues.id,

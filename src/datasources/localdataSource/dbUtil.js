@@ -200,6 +200,7 @@ module.exports.createStore = () => {
       defaultValue: Sequelize.NOW,
     },
     name: Sequelize.STRING,
+    phoneNumber: Sequelize.STRING
   });
 
   // const schedule = db.define("Schedule", {
