@@ -203,46 +203,6 @@ module.exports.createStore = () => {
     phoneNumber: Sequelize.STRING
   });
 
-  // const schedule = db.define("Schedule", {
-  //   id: {
-  //     type: Sequelize.UUID,
-  //     primaryKey: true,
-  //   },
-  //   createdAt: {
-  //     type: Sequelize.DATE,
-  //     defaultValue: Sequelize.NOW,
-  //   },
-  //   updatedAt: {
-  //     type: Sequelize.DATE,
-  //     defaultValue: Sequelize.NOW,
-  //   },
-  //   exerciseId: Sequelize.UUID,
-  //   patientId: Sequelize.UUID,
-  //   scheduleInfoId: Sequelize.UUID,
-  // });
-
-  // const scheduleInfo = db.define("ScheduleInfo", {
-  //   id: {
-  //     type: Sequelize.UUID,
-  //     primaryKey: true,
-  //   },
-  //   createdAt: {
-  //     type: Sequelize.DATE,
-  //     defaultValue: Sequelize.NOW,
-  //   },
-  //   updatedAt: {
-  //     type: Sequelize.DATE,
-  //     defaultValue: Sequelize.NOW,
-  //   },
-  //   startDate: Sequelize.DATE,
-  //   endDate: Sequelize.DATE,
-  //   scheduleDays: Sequelize.ARRAY(Sequelize.DATE),
-  //   scheduleType: {
-  //     type: Sequelize.ENUM,
-  //     values: ["Daily", "TwoDays", "ThreeDays"],
-  //   },
-  // });
-
 
   const therapySchedule = db.define("TherapySchedule", {
     id: {
@@ -374,9 +334,10 @@ module.exports.createStore = () => {
       type: Sequelize.UUID,
       primaryKey: true,
     },
-    questainareId: Sequelize.UUID,
+    questionId: Sequelize.UUID,
     dayId: Sequelize.UUID,
-    answers: Sequelize.TEXT
+    answerStr: Sequelize.TEXT,
+    answeredOptionId: Sequelize.UUID
   })
 
   const questionOption = db.define("QuestionOptions", {
@@ -450,6 +411,7 @@ module.exports.createStore = () => {
     exerciseAssesment,
     questainare,
     questions,
-    questionOption
+    questionOption,
+    questionAnswers
   };
 };

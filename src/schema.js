@@ -44,6 +44,7 @@ const typeDefs = gql`
     creatorId: String
     creator: Therapist
     id: ID!
+    uid: String
     title: String   
     questions: [Question]
     answers: [Answer]
@@ -424,7 +425,6 @@ const typeDefs = gql`
 
   input QuestionAnswerInput{
 
-    id: ID!
     questionId: ID!
     answeredOptionId: ID
     answerStr: String
@@ -432,7 +432,7 @@ const typeDefs = gql`
   }
 
   input QuestionareAnswerInput{
-    questionareId: ID!
+    questionareIds: ID!
     dayId: ID!
     answers: [QuestionAnswerInput]
   }

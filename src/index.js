@@ -27,7 +27,9 @@ require('dotenv').config();
 
 let whitelist = ['http://localhost:5000', 'http://localhost:3000', 'http://195.211.44.105:5000', 'http://195.211.44.105:3000', 'http://195.211.44.105']
 
-let fileBaseUrl = 'http://195.211.44.105:5000/'
+// let fileBaseUrl = 'http://195.211.44.105:5000/'
+let fileBaseUrl = 'http://192.168.2.6:5000/'
+
 
 app.use(cors({
   origin: function (origin, callback) {
@@ -130,31 +132,37 @@ function proccesVideo(file) {
   // console.log(file)
 
 
-  // ffmpeg(file.path).screenshots({
-  //   count: 1,
-  //   folder: file.destination,
-  //   filename: picName
-  // }).on("end", () => {
-  //   var fullPAth = file.destination + "/" + picName
+
+  ffmpeg.ffprobe(file, function (err, metadata) {
+    if (metadata) {
+
+      return { width, height } = { ...metadata }
+    }
+    return { width: -1, height: -1 }
+
+  })
+
+}
+
+async function asyncProcessVid(file) {
 
 
-  // })
+  return new Promise((resolve, reject) => {
+    ffmpeg.ffprobe(file, function (err, metadata) {
+      if (metadata) {
 
-  var picName = file.filename.split(".")[0] + ".jpeg"
-  var fullPAth = file.destination + "/" + picName
+        console.log("metadata", metadata)
+        resolve({ width, height } = { ...metadata.streams[0] })
+      }
+      resolve({ width: -1, height: -1 })
 
+    })
+  });
 
-  generateThumbnail(file).then(() => { }).catch((error) => { })
-
-
-  return {
-    // ...sizeOf(fullPAth),
-    placeHolder: fileBaseUrl + fullPAth.slice(8)
-  }
 }
 
 app.post("/upload_image", authChecker, upload.single("file"), uploadFiles);
-function uploadFiles(req, res) {
+async function uploadFiles(req, res) {
   console.log(`uploading an image`)
 
   console.log(req.body.id);
@@ -173,12 +181,15 @@ function uploadFiles(req, res) {
   }
   else {
 
+    // const { width, height } = await asyncProcessVid(req.file.path)
+
+    // console.log("width height ", width, height)
 
     res.json({
       // ...fileValues,
       size: req.file.size,
-      width: 0,
-      height: 0,
+      width: -1,
+      height: -1,
       url: fileBaseUrl + req.file.path.slice(8), id: req.body.id, type: req.file.mimetype
     });
     // const fileValues = proccesVideo(req.file)

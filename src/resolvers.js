@@ -119,19 +119,24 @@ module.exports = {
 
   TherapyDay: {
     questionares: (root, args, context, info) => {
+      if (root.questionareIds.length > 0)
+        return context.dataSources.userAPI.getQuestionare(root)
+      return []
       // if (root.exerciseIds)
       //   return context.dataSources.userAPI.getExercisesFromIDList(root.exerciseIds);
 
       // TODO if there is args, or context of patient, 
     },
   },
-  Questainare: {
-    answers: (root, args, context, info) => {
+  // Questainare: {
+  //   answers: (root, args, context, info) => {
 
-      //todo, if there is args or patient ID in root, get answers for this questionnare and day
-    }
-  }
-  ,
+  //     console.log("questionare answer for ", root, context, args, info)
+
+  //     //todo, if there is args or patient ID in root, get answers for this questionnare and day
+  //   }
+  // }
+  // ,
 
   Mutation: {
     addUser: async (_, args, context) => {
@@ -178,6 +183,15 @@ module.exports = {
 
       if (context.user) {
         return context.dataSources.userAPI.addQuestionare(context.user, args.questainareInput);
+      } else {
+        throw new AuthenticationError("API not available for you");
+      }
+    },
+
+    submitQuestionare: async (root, args, context, info) => {
+
+      if (context.user) {
+        return context.dataSources.userAPI.submitQuestionare(args.questionareAnswerInput);
       } else {
         throw new AuthenticationError("API not available for you");
       }

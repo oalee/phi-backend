@@ -108,10 +108,10 @@ class UserAPI extends DataSource {
       exercise.videos = videos
       exercise.assesments = JSON.parse(exercise.assesments)
       exercise.parameters = JSON.parse(exercise.parameters)
-      console.log(exercise.parameters)
+      // console.log(exercise.parameters)
 
-      console.log(exercise.assesments)
-      console.log("returing ", exercise)
+      // console.log(exercise.assesments)
+      // console.log("returing ", exercise)
       // console.log(JSON.parse())
       return exercise
     })
@@ -124,7 +124,7 @@ class UserAPI extends DataSource {
     let allExcercies = await this.store.exercise.findAll({ where: { id: exerciseIds } })
 
     return allExcercies.map(val => val.dataValues).map(async (exercise) => {
-      console.log("exercise is ", exercise)
+      // console.log("exercise is ", exercise)
       const pictures = await this.store.files.findAll({
         where: { id: exercise.pictures }
       })
@@ -137,8 +137,8 @@ class UserAPI extends DataSource {
       exercise.parameters = JSON.parse(exercise.parameters)
       console.log(exercise.parameters)
 
-      console.log(exercise.assesments)
-      console.log("returing ", exercise)
+      // console.log(exercise.assesments)
+      // console.log("returing ", exercise)
       // console.log(JSON.parse())
       return exercise
     })
@@ -232,7 +232,7 @@ class UserAPI extends DataSource {
     // console.log(resExercise.parameters)
 
     // console.log(resExercise.assesments)
-    console.log("returing ", resExercise)
+    // console.log("returing ", resExercise)
     // console.log(JSON.parse())
 
 
@@ -380,7 +380,7 @@ class UserAPI extends DataSource {
     var resDays = []
     for (let index = 0; index < days.length; index++) {
       const day = days[index];
-      console.log("day is ", day)
+      // console.log("day is ", day)
       const paramPerExercise = await this.store.exerciseParameter.findAll({
         where: {
           therapyDayId: day.id
@@ -394,7 +394,7 @@ class UserAPI extends DataSource {
       })
 
 
-      console.log("res ", evaluationResults)
+      // console.log("res ", evaluationResults)
 
       const transformedEvals = evaluationResults.map(val => val.dataValues).map(val => {
         return {
@@ -435,7 +435,7 @@ class UserAPI extends DataSource {
       })
 
     }
-    console.log("final day res ", resDays)
+    // console.log("final day res ", resDays)
 
     return {
       updatedAt: therpaySchduleRes.dataValues.updatedAt,
@@ -679,6 +679,83 @@ class UserAPI extends DataSource {
 
   }
 
+  async submitQuestionare(questionareAnswerInput) {
+
+
+    console.log("submit questionnare", questionareAnswerInput)
+    // let answers = questionareAnswerInput.answers.map(item => { return { ...item, dayId: questionareAnswerInput.dayId } })
+
+    for (let i = 0; i < questionareAnswerInput.answers.length; i++) {
+      const answer = { ...questionareAnswerInput.answers[i], dayId: questionareAnswerInput.dayId }
+
+      let create = await this.store.questionAnswers.create({ ...answer })
+
+    }
+
+    let res = await this.getQuestionare({ id: questionareAnswerInput.dayId, questionareIds: [questionareAnswerInput.questionareIds] })
+
+    return res[0]
+
+  }
+
+  async getQuestionare(day) {
+    var questainare = await this.store.questainare.findAll({
+      where: { id: day.questionareIds }
+    })
+
+    if (questainare.length == 0)
+      return []
+
+    questainare = questainare.map(item => item.dataValues)
+
+
+    for (let i = 0; i < questainare.length; i++) {
+      const q = questainare[i];
+      const tempRes = await this.store.questions.findAll({
+        where: { questainareId: q.id }
+      })
+      const res = tempRes.map(item => { return { ...item.dataValues, options: JSON.parse(item.dataValues.options) } })
+
+      questainare[i].questions = res
+      questainare[i].uid = `${day.id}_${questainare[i].id}`
+
+
+      if (res.length > 0) {
+
+        // console.log("res iz ", res)
+        let questionsIdMap = res.map(questionz => questionz.id)
+        // console.log("res iz ", questionsIdMap)
+
+        const asnwerTemp = await this.store.questionAnswers.findAll({
+          where: {
+            questionId: [...questionsIdMap],
+            dayId: day.id
+          }
+        })
+
+
+        const answer = asnwerTemp.map(item => {
+
+          // console.log("answer datavales, ", item.dataValues)
+          // const resTSA = { ...item.dataValues }
+          // console.log("res test", resTSA)
+          return { ...item.dataValues }
+        })
+        // console.log("answers are, ", answer)
+
+        questainare[i].answers = answer
+        questainare[i].answered = answer.length > 0
+
+      }
+      else {
+        questainare[i].asnwered = false
+
+      }
+    }
+
+    return questainare
+
+  }
 
   async getMyQuestionares(currentUser) {
 
@@ -779,7 +856,7 @@ class UserAPI extends DataSource {
       const user = userValues.find(val => val.patientId === i.id)
       // console.log(user)
       return { patientInfo: i.dataValues, ...user }
-    })
+    }).filter(i => i.username !== undefined)
 
     console.log(res)
 
@@ -819,6 +896,7 @@ class UserAPI extends DataSource {
         });
       } else {
         // throw error
+        patient.delete()
         throw new UserInputError(
           "type is patient and there is no patient Input"
         );
