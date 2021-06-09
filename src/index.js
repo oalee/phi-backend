@@ -332,7 +332,7 @@ async function startApolloServer() {
   return { server, app };
 }
 
-let { server } = await startApolloServer()
+let { server } = startApolloServer()
 // Set up Apollo Server
 // const server = new ApolloServer({
 //   typeDefs,
