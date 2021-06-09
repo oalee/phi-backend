@@ -1,6 +1,6 @@
 require("dotenv").config();
 
-const { ApolloServer } = require("apollo-server");
+const { ApolloServer } = require("apollo-server-express");
 const isEmail = require("isemail");
 
 const typeDefs = require("./schema");
@@ -14,6 +14,8 @@ const internalEngineDemo = require("./engine-demo");
 
 const { verifyToken } = require("./auth-util");
 const https = require('https');
+const http = require('http');
+
 const fs = require('fs');
 
 const express = require("express");
@@ -273,34 +275,82 @@ async function context({ req }) {
   //   throw new AuthenticationError("you must be logged in to query this schema");
 }
 
-// Set up Apollo Server
-const server = new ApolloServer({
-  typeDefs,
-  resolvers,
-  dataSources,
-  context,
-  introspection: true,
-  playground: true
-});
+async function startApolloServer() {
+  const configurations = {
+    // Note: You may need sudo to run on port 443
+    production: { ssl: true, port: 4000, hostname: 'tele-physio.ir' },
+    development: { ssl: false, port: 4000, hostname: 'localhost' },
+  };
 
-await server.start()
+  const environment = process.env.NODE_ENV || 'production';
+  const config = configurations[environment];
 
-apolloHttpsServer = https.createServer({
-
-  key: fs.readFileSync('/etc/letsencrypt/live/my_api_url/privkey.pem'),
-  cert: fs.readFileSync('/etc/letsencrypt/live/my_api_url/fullchain.pem'),
-}, server)
-// Start our server if we're not in a test env.
-// if we're in a test env, we'll manually start it in a test
-if (process.env.NODE_ENV !== "test") {
-  server.listen(4000).then(() => {
-    console.log(`
-      Server is running!
-      Listening on port 4000
-      Query at https://studio.apollographql.com/dev
-  `);
+  const server = new ApolloServer({
+    typeDefs, resolvers
+    ,
+    dataSources,
+    context,
+    introspection: true,
+    playground: true
   });
+  await server.start();
+
+  const app = express();
+  server.applyMiddleware({ app });
+
+  // Create the HTTPS or HTTP server, per configuration
+  let httpServer;
+  if (config.ssl) {
+    // Assumes certificates are in a .ssl folder off of the package root.
+    // Make sure these files are secured.
+    httpServer = https.createServer(
+      {
+        key: fs.readFileSync(`./ssl/${environment}/server.key`),
+        cert: fs.readFileSync(`./ssl/${environment}/server.crt`)
+      },
+      app,
+    );
+  } else {
+    httpServer = http.createServer(app);
+  }
+
+  await new Promise(resolve => server.listen({ port: config.port }, resolve));
+  console.log(
+    '🚀 Server ready at',
+    `http${config.ssl ? 's' : ''}://${config.hostname}:${config.port}${server.graphqlPath}`
+  );
+  return { server, app };
 }
+
+startApolloServer()
+// Set up Apollo Server
+// const server = new ApolloServer({
+//   typeDefs,
+//   resolvers,
+//   dataSources,
+//   context,
+//   introspection: true,
+//   playground: true
+// });
+
+// server.start()
+
+// apolloHttpsServer = https.createServer({
+
+//   key: fs.readFileSync('/etc/letsencrypt/live/my_api_url/privkey.pem'),
+//   cert: fs.readFileSync('/etc/letsencrypt/live/my_api_url/fullchain.pem'),
+// }, server)
+// // Start our server if we're not in a test env.
+// // if we're in a test env, we'll manually start it in a test
+// if (process.env.NODE_ENV !== "test") {
+//   server.listen(4000).then(() => {
+//     console.log(`
+//       Server is running!
+//       Listening on port 4000
+//       Query at https://studio.apollographql.com/dev
+//   `);
+//   });
+// }
 
 // export all the important pieces for integration/e2e tests to use
 module.exports = {
