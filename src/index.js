@@ -313,8 +313,18 @@ async function startApolloServer() {
   } else {
     httpServer = http.createServer(app);
   }
-
-  await new Promise(resolve => server.listen({ port: config.port }, resolve));
+  server.listen({ port: config.port }).then(() => {
+    console.log(`
+      Server is running!
+      Listening on port 4000
+      Query at https://studio.apollographql.com/dev
+  `);
+    console.log(
+      '🚀 Server ready at',
+      `http${config.ssl ? 's' : ''}://${config.hostname}:${config.port}${server.graphqlPath}`
+    );
+  })
+  // await new Promise(resolve => server.listen({ port: config.port }, resolve));
   console.log(
     '🚀 Server ready at',
     `http${config.ssl ? 's' : ''}://${config.hostname}:${config.port}${server.graphqlPath}`
