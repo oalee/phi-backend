@@ -31,7 +31,7 @@ let whitelist = ['http://localhost:5000', 'http://localhost:3000', 'http://195.2
 ]
 
 // let fileBaseUrl = 'http://195.211.44.105:5000/'
-let fileBaseUrl = 'https://tele-physio.ir:5000/'
+let fileBaseUrl = 'https://tele-physio.ir/files/'
 
 
 app.use(cors({
