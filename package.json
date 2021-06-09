@@ -6,7 +6,8 @@
   "scripts": {
     "test": "jest",
     "start": "nodemon src/index.js",
-    "start:ci": "node src/index.js"
+    "start:ci": "node src/index.js",
+    "deploy": "forever start --minUptime 2000 --spinSleepTime 5 index.js"
   },
   "author": "",
   "license": "ISC",
