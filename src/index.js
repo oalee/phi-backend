@@ -218,8 +218,8 @@ const key = "/etc/letsencrypt/live/tele-physio.ir/privkey.pem"
 
 
 const httpsServer = https.createServer({
-  key: fs.readFileSync('/etc/letsencrypt/live/my_api_url/privkey.pem'),
-  cert: fs.readFileSync('/etc/letsencrypt/live/my_api_url/fullchain.pem'),
+  key: fs.readFileSync(key),
+  cert: fs.readFileSync(cert),
 }, app);
 
 httpsServer.listen(5000, () => {
