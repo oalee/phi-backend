@@ -13,6 +13,8 @@ const UserAPI = require("./datasources/user");
 const internalEngineDemo = require("./engine-demo");
 
 const { verifyToken } = require("./auth-util");
+const https = require('https');
+const fs = require('fs');
 
 const express = require("express");
 var throttle = require('express-throttle-bandwidth');
@@ -207,11 +209,26 @@ async function uploadFiles(req, res) {
   }
 }
 
+
 app.use(express.static('uploads'))
 
-app.listen(5000, () => {
+const cert = "/etc/letsencrypt/live/tele-physio.ir/fullchain.pem"
+const key = "/etc/letsencrypt/live/tele-physio.ir/privkey.pem"
+
+
+const httpsServer = https.createServer({
+  key: fs.readFileSync('/etc/letsencrypt/live/my_api_url/privkey.pem'),
+  cert: fs.readFileSync('/etc/letsencrypt/live/my_api_url/fullchain.pem'),
+}, app);
+
+httpsServer.listen(5000, () => {
   console.log(`Upload Server started...`);
-});
+
+})
+
+// app.listen(5000, () => {
+//   console.log(`Upload Server started...`);
+// });
 
 // set up any dataSources our resolvers need
 const dataSources = () => ({
@@ -267,10 +284,17 @@ const server = new ApolloServer({
   playground: true
 });
 
+await server.start()
+
+apolloHttpsServer = https.createServer({
+
+  key: fs.readFileSync('/etc/letsencrypt/live/my_api_url/privkey.pem'),
+  cert: fs.readFileSync('/etc/letsencrypt/live/my_api_url/fullchain.pem'),
+}, server)
 // Start our server if we're not in a test env.
 // if we're in a test env, we'll manually start it in a test
 if (process.env.NODE_ENV !== "test") {
-  server.listen().then(() => {
+  server.listen(4000).then(() => {
     console.log(`
       Server is running!
       Listening on port 4000
