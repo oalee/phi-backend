@@ -373,7 +373,7 @@ module.exports.createStore = () => {
   evaluationResult.beforeCreate((obj) => (obj.id = uuid()));
 
   questionAnswers.sync()
-  questainare.sync({ force: true });
+  questainare.sync();
   questions.sync();
   questionOption.sync();
 
@@ -384,10 +384,10 @@ module.exports.createStore = () => {
   patientInfo.sync();
   // schedule.sync();
   // scheduleInfo.sync();
-  therapist.sync({ force: true });
+  therapist.sync();
   files.sync()
   publicExercise.sync()
-  therapyDay.sync({ force: true })
+  therapyDay.sync()
   therapySchedule.sync()
   exerciseParameter.sync()
   exerciseAssesment.sync()
