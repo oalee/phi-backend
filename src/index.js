@@ -21,7 +21,6 @@ var throttle = require('express-throttle-bandwidth');
 var cors = require('cors')  //use this
 const multer = require("multer");
 const { SHA3, SHA256 } = require("crypto-js");
-const fs = require('fs')
 const app = express();
 const sizeOf = require('image-size')
 const ffmpeg = require('fluent-ffmpeg');
