@@ -25,10 +25,13 @@ const sizeOf = require('image-size')
 const ffmpeg = require('fluent-ffmpeg');
 require('dotenv').config();
 
-let whitelist = ['http://localhost:5000', 'http://localhost:3000', 'http://195.211.44.105:5000', 'http://195.211.44.105:3000', 'http://195.211.44.105']
+let whitelist = ['http://localhost:5000', 'http://localhost:3000', 'http://195.211.44.105:5000', 'http://195.211.44.105:3000', 'http://195.211.44.105'
+  , "https://tele-physio.ir", "https://tele-physio.ir:3000", "https://tele-physio.ir:5000",
+  "https://www.tele-physio.ir", "https://www.tele-physio.ir:3000", "https://www.tele-physio.ir:5000"
+]
 
 // let fileBaseUrl = 'http://195.211.44.105:5000/'
-let fileBaseUrl = 'http://192.168.2.6:5000/'
+let fileBaseUrl = 'https://tele-physio.ir:5000/'
 
 
 app.use(cors({
