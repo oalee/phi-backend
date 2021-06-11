@@ -372,7 +372,7 @@ module.exports.createStore = () => {
   exerciseAssesment.beforeCreate((obj) => (obj.id = uuid()));
   evaluationResult.beforeCreate((obj) => (obj.id = uuid()));
 
-  questionAnswers.sync()
+  questionAnswers.sync({ force: true })
   questainare.sync();
   questions.sync();
   questionOption.sync();
